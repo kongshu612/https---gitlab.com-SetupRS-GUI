@@ -1,0 +1,73 @@
+﻿<UserControl x:Class="AsfStartUp.View.ConfigureRootPath"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AsfStartUp.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Border Background="LightBlue" Margin="5" CornerRadius="5">
+        <Grid DataContext="{Binding RootPathVM, Source={StaticResource Locator}}" Background="LightBlue">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="ASF Root Path: " Grid.Column="0" HorizontalAlignment="Center" Margin="0,10"/>
+                <TextBox Name="txt_ASFRootPath" Text="{Binding ASFRootPath,UpdateSourceTrigger=PropertyChanged}" Width="100" HorizontalAlignment="Left" Margin="0,10" Grid.Column="1"/>
+                <Button Name="btn_Load" Content="Load" Command="{Binding LoadCommand}" Margin="0,10" HorizontalAlignment="Center" Grid.Column="2"/>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <ListView Name="lst_Component" Grid.Column="0" ItemsSource="{Binding Components}" SelectedItem="{Binding SelectedComponent}" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="1" >
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="Blue"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.View>
+                        <GridView >
+                            <GridViewColumn Header="Components" Width="{Binding ElementName=lst_Component,Path=ActualWidth}">
+                                <GridViewColumn.HeaderContainerStyle>
+                                    <Style TargetType="GridViewColumnHeader">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="Width" Value="{Binding ElementName=lst_Component, Path=ActualWidth}"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                    </Style>
+                                </GridViewColumn.HeaderContainerStyle>
+                            </GridViewColumn>
+
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <ListView Name="lst_Sequences" Grid.Column="1" ItemsSource="{Binding Sequences}" SelectedItem="{Binding SelectedSequence}" BorderThickness="1"  Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="Blue"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Width="{Binding ElementName=lst_Sequences,Path=ActualWidth}">
+                                <GridViewColumnHeader Background="Transparent" Width="{Binding ElementName=lst_Sequences, Path=ActualWidth}" BorderThickness="0" Content="Sequences" >
+                                                                        
+                                </GridViewColumnHeader>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

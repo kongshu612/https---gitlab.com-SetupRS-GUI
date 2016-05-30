@@ -1,0 +1,23 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:AsfStartUp"
+                    xmlns:vm="clr-namespace:AsfStartUp.ViewModel"
+                    xmlns:Views="clr-namespace:AsfStartUp.View"
+                    >
+    <DataTemplate DataType="{x:Type vm:ConfigureRootPath_ViewModel}">
+        <Views:ConfigureRootPath/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:GeneralConfigure_ViewModel}">
+        <Views:GeneralConfigureView/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:HypervisorConfigure_ViewModel}">
+        <Views:HypervisorConfigureView/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:BuildsConfigure_ViewModel}">
+        <Views:BuildsConfigureView/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type vm:BuildConfigure_ViewModel}">
+        <Views:GeneralConfigureView/>
+    </DataTemplate>
+
+</ResourceDictionary>

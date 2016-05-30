@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:AsfStartUp">
+    <Style x:Key="Txt_Style" TargetType="TextBlock">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Foreground" Value="Blue"/>
+        <Setter Property="FontSize" Value="15"/>
+    </Style>
+
+
+</ResourceDictionary>

@@ -1,0 +1,63 @@
+﻿<Window x:Class="AsfStartUp.View.BuildConfigureView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AsfStartUp.View"
+        xmlns:ds="clr-namespace:AsfStartUp.Auxiliary.TemplateSelectors"
+        mc:Ignorable="d"
+        Title="Configure Build" Height="300" Width="500" WindowStartupLocation="CenterOwner" Closed="win_Closed" ResizeMode="NoResize">
+    <Border Background="LightBlue"  DataContext="{Binding}" >
+            <Border.Resources>
+                <cvt:StatusValueConverter x:Key="StatusValueConverter" d:IsDataSource="True" xmlns:cvt="clr-namespace:AsfStartUp.Auxiliary.Converters"/>
+                <DataTemplate x:Key="RadioEdit">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding CKey}" ToolTip="We Can Add Description Here" />
+                        <RadioButton Grid.Column="1" IsChecked="{Binding CValue, Mode=TwoWay}" Content="True" HorizontalAlignment="Left" />
+                        <RadioButton Grid.Column="2"  Content="False" HorizontalAlignment="Left" IsChecked="{Binding CValue, Mode=TwoWay, Converter={StaticResource StatusValueConverter}}" />
+                    </Grid>
+                </DataTemplate>
+                <DataTemplate x:Key="TextEdit">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding CKey}" ToolTip="We Can Add Description Here"/>
+                        <TextBox Text="{Binding CValue}" Grid.Column="1" Margin="0"/>
+                    </Grid>
+                </DataTemplate>
+                <DataTemplate x:Key="ComboBoxEdit">
+                    <TextBlock Text="Placeholder"/>
+                </DataTemplate>
+                <ds:TemplateSelectors x:Key="TemplaterSelector" ComboBoxTemplate="{StaticResource ComboBoxEdit}" TextTemplate="{StaticResource TextEdit}" RadioTemplate="{StaticResource RadioEdit}"/>
+            </Border.Resources>
+            <Grid DataContext="{Binding}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding Header}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <ListBox ItemsSource="{Binding GeneralData}" ItemTemplateSelector="{StaticResource TemplaterSelector}" Background="Transparent" Margin="5" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Border Background="Transparent" Margin="10,3" ScrollViewer.CanContentScroll="False">
+                                            <ContentPresenter/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
+        </Border>
+</Window>

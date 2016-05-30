@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="AsfStartUp.View.BuildsConfigureView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AsfStartUp.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid DataContext="{Binding BuildsVM,Source={StaticResource Locator}}" Background="Transparent">
+        <Grid.Resources>
+            <Style x:Key="btnStytle" TargetType="{x:Type Button}">
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Foreground" Value="Blue"/>
+                <Setter Property="Width" Value=" 50"/>
+                <Setter Property="Margin" Value="10,2,0,2"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Background="Transparent" HorizontalAlignment="Stretch">
+            <Button Name="btn_Add" Content="Add" Style="{StaticResource btnStytle}"  Command="{Binding AddCommand}"/>
+            <Button Name="btn_Delete" Content="Delete" Style="{StaticResource btnStytle}"  Command="{Binding DeleteCommand}"/>
+        </StackPanel>
+        <ListView Margin="10,0" Name="lst_Builds" Grid.Row="1" ItemsSource="{Binding Builds}" SelectedItem="{Binding SelectedBuild}" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                    <Setter Property="FontSize" Value="13"/>
+                    <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="{Binding ElementName=lst_Builds,Path=ActualWidth}" DisplayMemberBinding="{Binding BuildName}" >
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="Builds" Background="Transparent" Foreground="Blue" HorizontalAlignment="Stretch" FontSize="20"/>
+                        </GridViewColumn.Header>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>
