@@ -11,8 +11,40 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <ContentControl Content="{Binding CurrentViewModel}" Grid.Row="0" />
+        </Grid.RowDefinitions >
+        <TabControl Grid.Row="0" Margin="5" SelectedIndex="{Binding Path=DataContext.Index , RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}" Background="LightBlue">
+            <TabControl.Resources>
+                <Style TargetType="TabItem" x:Key="TabItemStyle">
+                    <Setter Property="Background" Value="LightBlue"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Background" Value="LightBlue"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="Sequence"  >
+                <ContentControl Content="{Binding RootPathInfoVM,Source={StaticResource Locator}}" DataContext="{Binding RootPathInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="Builds">
+                <ContentControl Content="{Binding BuildsInfoVM,Source={StaticResource Locator}}" DataContext="{Binding BuildsInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="RoleTemplate">
+                <ContentControl Content="{Binding OSBuildInfoVM,Source={StaticResource Locator}}" DataContext="{Binding OSBuildInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="General">
+                <ContentControl Content="{Binding GeneralInfoVM,Source={StaticResource Locator}}" DataContext="{Binding GeneralInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="Hypervisor">
+                <ContentControl Content="{Binding HypervisorInfoVM,Source={StaticResource Locator}}" DataContext="{Binding HypervisorInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="Domain">
+                <ContentControl Content="{Binding DomainInfoVM,Source={StaticResource Locator}}" DataContext="{Binding DomainInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="Mail">
+                <ContentControl Content="{Binding MailInfoVM,Source={StaticResource Locator}}" DataContext="{Binding MailInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+        </TabControl>
         <Grid Grid.Row="1" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />

@@ -29,7 +29,7 @@ namespace AsfStartUp.View
         private void win_Closed(object sender, EventArgs e)
         {
             BuildsConfigure_ViewModel bscvm = ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>();
-            ((BuildConfigure_ViewModel)bscvm.SelectedBuild).BuildName = "";
+            ((BuildConfigure_ViewModel)bscvm.SelectedBuild).OnPropertyChanged();
         }
     }
 }

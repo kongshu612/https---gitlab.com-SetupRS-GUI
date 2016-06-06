@@ -76,7 +76,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Auxiliary\Converters\Converters.cs" />
+    <Compile Include="Auxiliary\Message.cs" />
     <Compile Include="Auxiliary\TemplateSelectors\TemplateSelectors.cs" />
+    <Compile Include="Auxiliary\XMLAccess.cs" />
     <Compile Include="Model\XMLData.cs" />
     <Compile Include="ViewModel\BuildsConfigure_ViewModel.cs" />
     <Compile Include="ViewModel\ConfigureRootPath_ViewModel.cs" />

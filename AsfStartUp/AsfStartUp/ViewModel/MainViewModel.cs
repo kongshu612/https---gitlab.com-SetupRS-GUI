@@ -29,10 +29,10 @@ namespace AsfStartUp.ViewModel
         /// </summary>
         #region private members
         private string _StatusMessage;
-        private ViewModelBase _CurrentViewModel;
+       // private ViewModelBase _CurrentViewModel;
         private ViewModelBase _StatusViewModel;
         private string _CurrentTime;
-        private List<ViewModelBase> _ViewModelCollections;
+       // private List<ViewModelBase> _ViewModelCollections;
         private int _index;
         #endregion
 
@@ -62,18 +62,18 @@ namespace AsfStartUp.ViewModel
             }
         }
 
-        public ViewModelBase CurrentViewModel
-        {
-            get
-            {
-                return _CurrentViewModel;
-            }
-            set
-            {
-                _CurrentViewModel = value;
-                RaisePropertyChanged("CurrentViewModel");
-            }
-        }
+        //public ViewModelBase CurrentViewModel
+        //{
+        //    get
+        //    {
+        //        return _CurrentViewModel;
+        //    }
+        //    set
+        //    {
+        //        _CurrentViewModel = value;
+        //        RaisePropertyChanged("CurrentViewModel");
+        //    }
+        //}
 
         public ViewModelBase StatusViewModel
         {
@@ -124,27 +124,6 @@ namespace AsfStartUp.ViewModel
         private void ExecuteBackCommand(string param)
         {
             Index--;
-            GeneralConfigure_ViewModel gcvm = ServiceLocator.Current.GetInstance<GeneralConfigure_ViewModel>();
-            if(Index<2)
-            {
-                CurrentViewModel = _ViewModelCollections[Index];
-                return;
-            }
-            else
-            {
-                gcvm.LoadDisplayData(Index - 2);
-                return;
-            }
-            //if (Index>=1 && Index<gcvm.Count)
-            //{               
-            //    gcvm.LoadDisplayData(Index - 1);
-            //    return;
-            //}
-            //else
-            //{
-            //    CurrentViewModel = _ViewModelCollections[Index-gcvm.Count+1];
-            //    return;
-            //}
         }
         private bool CanExecuteBackCommand(string param)
         {
@@ -164,27 +143,10 @@ namespace AsfStartUp.ViewModel
         private void ExecuteNextCommand(string param)
         {
             Index++;
-            GeneralConfigure_ViewModel gcvm = ServiceLocator.Current.GetInstance<GeneralConfigure_ViewModel>();
-            //if(Index>gcvm.Count)
-            //{
-            //    CurrentViewModel = _ViewModelCollections[Index - gcvm.Count+1];
-            //    return;
-            //}
-            if (Index>2)
-            {               
-                gcvm.LoadDisplayData(Index - 2);
-                return;
-            }
-            else
-            {
-                CurrentViewModel = _ViewModelCollections[Index];
-                return;
-            }
         }
         private bool CanExecuteNextCommand(string param)
         {
-            GeneralConfigure_ViewModel gcvm = ServiceLocator.Current.GetInstance<GeneralConfigure_ViewModel>();
-            return Index < gcvm.Count+1;
+            return Index < 6;
         }
         public ICommand NextCommand
         {
@@ -200,12 +162,7 @@ namespace AsfStartUp.ViewModel
         public MainViewModel()
         {
             InitializeTimer();
-            _index = 0;
-            _ViewModelCollections = new List<ViewModelBase>();
-            _ViewModelCollections.Add(ServiceLocator.Current.GetInstance<ConfigureRootPath_ViewModel>());
-            _ViewModelCollections.Add(ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>());
-            _ViewModelCollections.Add(ServiceLocator.Current.GetInstance<GeneralConfigure_ViewModel>());
-            CurrentViewModel = _ViewModelCollections[0];
+            Index = 0;
             
         }
 

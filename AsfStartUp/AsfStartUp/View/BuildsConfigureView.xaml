@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:AsfStartUp.View"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid DataContext="{Binding BuildsVM,Source={StaticResource Locator}}" Background="Transparent">
+    <Grid DataContext="{Binding}" Background="Transparent">
         <Grid.Resources>
             <Style x:Key="btnStytle" TargetType="{x:Type Button}">
                 <Setter Property="FontSize" Value="13"/>
@@ -34,9 +34,19 @@
             </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="{Binding ElementName=lst_Builds,Path=ActualWidth}" DisplayMemberBinding="{Binding BuildName}" >
+                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding BuildName}" >
                         <GridViewColumn.Header>
-                            <GridViewColumnHeader Content="Builds" Background="Transparent" Foreground="Blue" HorizontalAlignment="Stretch" FontSize="20"/>
+                            <GridViewColumnHeader Content="Name" Background="Transparent" Foreground="Black" HorizontalAlignment="Stretch" FontSize="15"/>
+                        </GridViewColumn.Header>
+                    </GridViewColumn>
+                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding BuildNumber}">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="Number" Background="Transparent" Foreground="Black" HorizontalAlignment="Stretch" FontSize="15"/>
+                        </GridViewColumn.Header>
+                    </GridViewColumn>
+                    <GridViewColumn Width="500" DisplayMemberBinding="{Binding BuildPath}">
+                        <GridViewColumn.Header>
+                            <GridViewColumnHeader Content="Path" Background="Transparent" Foreground="Black" HorizontalAlignment="Stretch" FontSize="15" HorizontalContentAlignment="Left"/>
                         </GridViewColumn.Header>
                     </GridViewColumn>
                 </GridView>

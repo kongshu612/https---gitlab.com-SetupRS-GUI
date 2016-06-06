@@ -7,17 +7,11 @@
     <DataTemplate DataType="{x:Type vm:ConfigureRootPath_ViewModel}">
         <Views:ConfigureRootPath/>
     </DataTemplate>
-    <DataTemplate DataType="{x:Type vm:GeneralConfigure_ViewModel}">
+    <DataTemplate DataType="{x:Type vm:GeneralCommon_ViewModel}">
         <Views:GeneralConfigureView/>
-    </DataTemplate>
-    <DataTemplate DataType="{x:Type vm:HypervisorConfigure_ViewModel}">
-        <Views:HypervisorConfigureView/>
     </DataTemplate>
     <DataTemplate DataType="{x:Type vm:BuildsConfigure_ViewModel}">
         <Views:BuildsConfigureView/>
-    </DataTemplate>
-    <DataTemplate DataType="{x:Type vm:BuildConfigure_ViewModel}">
-        <Views:GeneralConfigureView/>
     </DataTemplate>
 
 </ResourceDictionary>
