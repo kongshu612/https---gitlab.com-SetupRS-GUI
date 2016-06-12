@@ -12,6 +12,7 @@ using Microsoft.Practices.ServiceLocation;
 using System.Collections;
 using AsfStartUp.Model;
 using AsfStartUp.Auxiliary;
+using System.Xml.Linq;
 
 namespace AsfStartUp.ViewModel
 {
@@ -192,14 +193,18 @@ namespace AsfStartUp.ViewModel
         public void LoadGeneralInfo(string filePath)
         {
             filePath = filePath + @"\Tests\environments\Setup\Config\SetupRS.xml";
-            GeneralData = new ObservableCollection<GeneralDisplayData>();
-            Hashtable GeneralRawInfo = AsfStartUp.Auxiliary.GeneralAccess.LoadGeneralInfo(filePath);
-            foreach(var each in GeneralRawInfo.Keys)
+            ObservableCollection<GeneralDisplayData> t = new ObservableCollection<GeneralDisplayData>();
+            ObservableCollection<XElement> GeneralRawInfo = AsfStartUp.Auxiliary.GeneralAccess.LoadGeneralInfo(filePath);
+            var tmp = GeneralRawInfo.Select(e =>
             {
-                GeneralData.Add(new GeneralDisplayData(each.ToString(), bool.Parse(GeneralRawInfo[each].ToString()), CustomerType.Bool));
-            }
-            var tmp = GeneralData;
-            GeneralData = new ObservableCollection<GeneralDisplayData>(tmp.OrderBy(e => e.CType).ToArray());
+                t.Add(new GeneralDisplayData(e,Type.GetType("AsfStartUp.Auxiliary.GeneralAccess")));
+                return e;
+            }).ToArray();
+            //foreach(var each in GeneralRawInfo.Keys)
+            //{
+            //    GeneralData.Add(new GeneralDisplayData(each.ToString(), bool.Parse(GeneralRawInfo[each].ToString()), CustomerType.Bool));
+            //}
+            GeneralData = new ObservableCollection<GeneralDisplayData>(t.OrderBy(e => e.CType).ToArray());
             Header = "General Configure";
            // PropertyMessageSetter.RefleshUI(new PropertyMessage("Header"));
         }
@@ -237,21 +242,27 @@ namespace AsfStartUp.ViewModel
         {
             GeneralData = new ObservableCollection<GeneralDisplayData>();
             filePath += @"\Tests\environments\Setup\Config\Hypervisor.xml";
-            Hashtable HypervisorRawInfo = AsfStartUp.Auxiliary.HypervisorAccess.LoadHypervisorInfo(filePath);
-            foreach(var each in HypervisorRawInfo.Keys)
+            ObservableCollection<XElement> HypervisorRawInfo = AsfStartUp.Auxiliary.HypervisorAccess.LoadHypervisorInfo(filePath);
+            ObservableCollection<GeneralDisplayData> t = new ObservableCollection<GeneralDisplayData>();
+            var tmp = HypervisorRawInfo.Select(e =>
             {
-                bool tmp;
-                if(bool.TryParse(HypervisorRawInfo[each].ToString(),out tmp))
-                {
-                    GeneralData.Add(new GeneralDisplayData(each.ToString(), tmp, CustomerType.Bool));
-                }
-                else
-                {
-                    GeneralData.Add(new GeneralDisplayData(each.ToString(), HypervisorRawInfo[each].ToString(), CustomerType.Text));
-                }
-            }
-            var tmp1 = GeneralData;
-            GeneralData = new ObservableCollection<GeneralDisplayData>(tmp1.OrderBy(e => e.CType).ToArray());
+                t.Add(new GeneralDisplayData(e,Type.GetType("AsfStartUp.Auxiliary.HypervisorAccess")));
+                return e;
+            }).ToArray();
+            //foreach(var each in HypervisorRawInfo.Keys)
+            //{
+            //    bool tmp;
+            //    if(bool.TryParse(HypervisorRawInfo[each].ToString(),out tmp))
+            //    {
+            //        GeneralData.Add(new GeneralDisplayData(each.ToString(), tmp, CustomerType.Bool));
+            //    }
+            //    else
+            //    {
+            //        GeneralData.Add(new GeneralDisplayData(each.ToString(), HypervisorRawInfo[each].ToString(), CustomerType.Text));
+            //    }
+            //}
+           // var tmp1 = GeneralData;
+            GeneralData = new ObservableCollection<GeneralDisplayData>(t.OrderBy(e => e.CType).ToArray());
             Header = "Hypervisor Configure";
            // PropertyMessageSetter.RefleshUI(new PropertyMessage("Header"));
         }
@@ -288,22 +299,27 @@ namespace AsfStartUp.ViewModel
         public void LoadDomainInfo(string filePath)
         {
             filePath += @"\Tests\environments\Setup\Config\SetupRS.xml";
-            Hashtable DomainInfo= AsfStartUp.Auxiliary.DomainAccess.LoadDomainInfo(filePath);
-            GeneralData = new ObservableCollection<GeneralDisplayData>();
-            foreach(string each in DomainInfo.Keys)
+            ObservableCollection<XElement> DomainInfo= AsfStartUp.Auxiliary.DomainAccess.LoadDomainInfo(filePath);
+            ObservableCollection<GeneralDisplayData> t = new ObservableCollection<GeneralDisplayData>();
+            var tmp = DomainInfo.Select(e =>
             {
-                bool tmp;
-                if(bool.TryParse(DomainInfo[each].ToString(),out tmp))
-                {
-                    GeneralData.Add(new GeneralDisplayData(each, tmp, CustomerType.Bool));
-                }
-                else
-                {
-                    GeneralData.Add(new GeneralDisplayData(each, DomainInfo[each].ToString(), CustomerType.Text));
-                }
-            }
-            var tmp1 = GeneralData;
-            GeneralData = new ObservableCollection<GeneralDisplayData>(tmp1.OrderBy(e => e.CType).ToArray());
+                t.Add(new GeneralDisplayData(e,Type.GetType("AsfStartUp.Auxiliary.DomainAccess")));
+                return e;
+            }).ToArray();
+            //foreach(string each in DomainInfo.Keys)
+            //{
+            //    bool tmp;
+            //    if(bool.TryParse(DomainInfo[each].ToString(),out tmp))
+            //    {
+            //        GeneralData.Add(new GeneralDisplayData(each, tmp, CustomerType.Bool));
+            //    }
+            //    else
+            //    {
+            //        GeneralData.Add(new GeneralDisplayData(each, DomainInfo[each].ToString(), CustomerType.Text));
+            //    }
+            //}
+            //var tmp1 = GeneralData;
+            GeneralData = new ObservableCollection<GeneralDisplayData>(t.OrderBy(e => e.CType).ToArray());
             Header = "Domain Configure";
            // PropertyMessageSetter.RefleshUI(new PropertyMessage("Header"));
         }
@@ -328,23 +344,29 @@ namespace AsfStartUp.ViewModel
         {
             GeneralData = new ObservableCollection<GeneralDisplayData>();
             filePath += @"\Tests\environments\Setup\Config\SetupRS.xml";
-            Hashtable MailRawInfo = AsfStartUp.Auxiliary.MailAccess.LoadMailInfo(filePath);
-            foreach(var each in MailRawInfo.Keys)
+            ObservableCollection<XElement> MailRawInfo = AsfStartUp.Auxiliary.MailAccess.LoadMailInfo(filePath);
+            ObservableCollection<GeneralDisplayData> t = new ObservableCollection<GeneralDisplayData>();
+            var tmp = MailRawInfo.Select(e =>
             {
-                bool tmp;
-                if(bool.TryParse(MailRawInfo[each].ToString(),out tmp))
-                {
-                    GeneralData.Add(new GeneralDisplayData(each.ToString(), tmp, CustomerType.Bool));
-                }
-                else
-                {
-                    GeneralData.Add(new GeneralDisplayData(each.ToString(), MailRawInfo[each].ToString(), CustomerType.Text));
-                }
-            }
-            var tmp1 = GeneralData;
-            GeneralData = new ObservableCollection<GeneralDisplayData>(tmp1.OrderBy(e => e.CType).ToArray());
+                t.Add(new GeneralDisplayData(e,Type.GetType("AsfStartUp.Auxiliary.MailAccess")));
+                return e;
+            }).ToArray();
+            //foreach(var each in MailRawInfo.Keys)
+            //{
+            //    bool tmp;
+            //    if(bool.TryParse(MailRawInfo[each].ToString(),out tmp))
+            //    {
+            //        GeneralData.Add(new GeneralDisplayData(each.ToString(), tmp, CustomerType.Bool));
+            //    }
+            //    else
+            //    {
+            //        GeneralData.Add(new GeneralDisplayData(each.ToString(), MailRawInfo[each].ToString(), CustomerType.Text));
+            //    }
+            //}
+            //var tmp1 = GeneralData;
+            GeneralData = new ObservableCollection<GeneralDisplayData>(t.OrderBy(e => e.CType).ToArray());
             Header = "Mail Configure";
-            PropertyMessageSetter.RefleshUI(new PropertyMessage("Header"));
+            //PropertyMessageSetter.RefleshUI(new PropertyMessage("Header"));
         }
         #endregion
         #region private methods
@@ -468,11 +490,14 @@ namespace AsfStartUp.ViewModel
     }
     public class Role_OSBuild_ViewModel:ViewModelBase
     {
+        #region public members
+        public OSInfo _SelectedOS;
+        public BuildConfigure_ViewModel _SelectedBuild;
+        #endregion
+
         #region private members
         private string _RoleName;
         private ObservableCollection<OSInfo> _OSList;
-        private OSInfo _SelectedOS;
-        private BuildConfigure_ViewModel _SelectedBuild;
         #endregion
 
         #region public properties
@@ -554,10 +579,12 @@ namespace AsfStartUp.ViewModel
     }
     public class GeneralDisplayData:ViewModelBase,IComparable<GeneralDisplayData>,IEquatable<GeneralDisplayData>
     {
+        public XElement _Element;
         #region private members
         private string _CKey;
         private object _CValue;
         private CustomerType _CType;
+        private Type XMLAccessType;
 
         #endregion
 
@@ -566,13 +593,19 @@ namespace AsfStartUp.ViewModel
         {
             get
             {
-                return _CKey;
+                if(_Element!=null)
+                    return _Element.Name.ToString();
+                else
+                    return _CKey;
             }
-            set
-            {
-                _CKey = value;
-                RaisePropertyChanged("");
-            }
+            //set
+            //{
+            //    if(_Element!=null)
+            //        _Element.Name = value;
+            //    else
+            //        _CKey = value;
+            //    RaisePropertyChanged("CKey");
+            //}
         }
         public object CValue
         {
@@ -583,7 +616,12 @@ namespace AsfStartUp.ViewModel
             set
             {
                 _CValue = value;
-                RaisePropertyChanged("");
+                if(_Element!=null)
+                {
+                    _Element.SetValue(_CValue.ToString());
+                    XMLAccessType.GetMethod("SaveChanges").Invoke(null,new object[] { });
+                }
+                RaisePropertyChanged("CValue");
             }
         }
         public CustomerType CType
@@ -592,11 +630,11 @@ namespace AsfStartUp.ViewModel
             {
                 return _CType;
             }
-            set
-            {
-                _CType = value;
-                RaisePropertyChanged("");
-            }
+            //set
+            //{
+            //    _CType = value;
+            //    RaisePropertyChanged("CType");
+            //}
         }
         #endregion
 
@@ -626,6 +664,23 @@ namespace AsfStartUp.ViewModel
         }
         public GeneralDisplayData()
         { }
+        public GeneralDisplayData(XElement _element,Type _xmlAccessType)
+        {
+            _CKey = _element.Name.ToString();
+            bool tmp;
+            if(bool.TryParse(_element.Value.ToString(), out tmp))
+            {
+                _CValue = tmp;
+                _CType = CustomerType.Bool;
+            }
+            else
+            {
+                _CValue = _element.Value.ToString();
+                _CType = CustomerType.Text;
+            }
+            _Element = _element;
+            XMLAccessType = _xmlAccessType;
+        }
         #endregion
     }
     public enum CustomerType{Text,Bool,Combo};

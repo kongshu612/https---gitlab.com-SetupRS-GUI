@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using GalaSoft.MvvmLight.Messaging;
+using AsfStartUp.Auxiliary;
 
 namespace AsfStartUp
 {
@@ -23,6 +25,7 @@ namespace AsfStartUp
         public MainWindow()
         {
             InitializeComponent();
+            Messenger.Default.Register<PropertyMessage>(this, pm => { this.btn_Next.Content = pm.Btn_Text; });
         }
     }
 }

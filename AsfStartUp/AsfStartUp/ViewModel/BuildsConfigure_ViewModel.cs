@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Collections;
 using AsfStartUp.Auxiliary;
+using System.Xml.Linq;
 
 namespace AsfStartUp.ViewModel
 {
@@ -19,6 +20,7 @@ namespace AsfStartUp.ViewModel
         #region private members
         private ObservableCollection<GeneralCommon_ViewModel> _Builds;
         private GeneralCommon_ViewModel _SelectedBuild;
+        private string BuildFilePath;
        // private const string BuildFilePath = @"C:\asf\Tests\environments\Setup\Config\Builds.xml";
         #endregion
 
@@ -53,9 +55,10 @@ namespace AsfStartUp.ViewModel
         #region private methods
         private void PopulateData(string filePath)
         {
-            string BuildFilePath = filePath.TrimEnd('\\') + @"\Tests\environments\Setup\Config\Builds.xml";
+            BuildFilePath = filePath.TrimEnd('\\') + @"\Tests\environments\Setup\Config\Builds.xml";
             Builds = new ObservableCollection<GeneralCommon_ViewModel>();
-            ObservableCollection<Hashtable> buildsRawData = AsfStartUp.Auxiliary.BuildsAccess.LoadBuilds(BuildFilePath);
+            // ObservableCollection<Hashtable> buildsRawData = AsfStartUp.Auxiliary.BuildsAccess.LoadBuilds(BuildFilePath);
+            ObservableCollection<XElement> buildsRawData = AsfStartUp.Auxiliary.BuildsAccess.LoadBuilds(BuildFilePath);
             var tmp = buildsRawData.Select(b =>
             {
                 Builds.Add(new BuildConfigure_ViewModel(b));
@@ -64,6 +67,10 @@ namespace AsfStartUp.ViewModel
             ).ToArray();
             SelectedBuild = Builds.FirstOrDefault();
         }
+        //private void UpdateBuildData(Hashtable ht)
+        //{
+        //   // BuildsAccess.UpdateBuild(ht,BuildFilePath);
+        //}
         #endregion
 
         #region public Commands
@@ -138,6 +145,31 @@ namespace AsfStartUp.ViewModel
                 return GeneralData.Where(g=>g.CKey== "XD_SOURCE_DIR").Select(d => d.CValue).FirstOrDefault().ToString();
             }
         }
+        public List<string> Subdirectories
+        {
+            get
+            {
+                List<string> _subdirectories = new List<string>();
+                var tmp = GeneralData.Where(g => g.CKey == "SUBDIR_TO_SYNC").Select(d => d.CValue.ToString()).FirstOrDefault();
+                if(tmp!=null)
+                {
+                    _subdirectories.AddRange(new List<string>(tmp.ToString().Split(',')));
+                }
+                var sub = GeneralData.Where(g => g.CKey == "EXTRAS_SUBDIR_TO_SYNC").Select(d => d.CValue.ToString()).FirstOrDefault();
+                if(sub!=null)
+                {
+                    _subdirectories.AddRange(new List<string>(sub.ToString().Split(',')));
+                }
+                return _subdirectories;
+            }
+        }
+        public bool IsSync
+        {
+            get
+            {
+                return bool.Parse(GeneralData.Where(g => g.CKey == "SYNC_DIRS").Select(d => d.CValue.ToString()).FirstOrDefault().ToString());
+            }
+        }
 
         #endregion
 
@@ -182,6 +214,15 @@ namespace AsfStartUp.ViewModel
                     GeneralData.Add(new GeneralDisplayData(each, buildRawData[each].ToString(), CustomerType.Text));
                 }
             }
+        }
+        public BuildConfigure_ViewModel(XElement _element)
+        {
+            GeneralData = new ObservableCollection<GeneralDisplayData>();
+            var tmp = _element.Elements().Select(e =>
+            {
+                GeneralData.Add(new GeneralDisplayData(e,Type.GetType("AsfStartUp.Auxiliary.BuildsAccess")));
+                return e;
+            }).ToArray();
         }
         #endregion
     }

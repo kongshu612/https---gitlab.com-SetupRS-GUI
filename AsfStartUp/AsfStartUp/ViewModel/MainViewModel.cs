@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Collections.Generic;
 using Microsoft.Practices.ServiceLocation;
+using AsfStartUp.Auxiliary;
 
 namespace AsfStartUp.ViewModel
 {
@@ -142,11 +143,29 @@ namespace AsfStartUp.ViewModel
         private ICommand _NextCommand;
         private void ExecuteNextCommand(string param)
         {
-            Index++;
+            if (Index == 6)
+            {
+                CallSetUpRS_ViewModel csuvm = new CallSetUpRS_ViewModel();
+                csuvm.GenerateJsonStep1();
+                csuvm.GenerateJsonStep2();
+            }
+            else
+            {
+                Index++;
+            }
         }
         private bool CanExecuteNextCommand(string param)
         {
-            return Index < 6;
+            if (Index == 6)
+            {
+                PropertyMessageSetter.RefleshUI(new PropertyMessage("Generate"));
+            }
+            else
+            {
+                PropertyMessageSetter.RefleshUI(new PropertyMessage("Next >"));
+            }
+
+            return true;
         }
         public ICommand NextCommand
         {

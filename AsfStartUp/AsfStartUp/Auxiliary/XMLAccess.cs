@@ -13,81 +13,236 @@ namespace AsfStartUp.Auxiliary
 {
     public class BuildsAccess
     {
-        public static ObservableCollection<Hashtable> LoadBuilds(string buildFilePath)
+        public static XElement Root;
+        public static string FilePath;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        //public static ObservableCollection<Hashtable> LoadBuilds(string buildFilePath)
+        //{
+        //    ObservableCollection<Hashtable> Builds = new ObservableCollection<Hashtable>();
+        //    XElement root = XElement.Load(buildFilePath);
+        //    var tmp = root.Descendants("Build").Select(b =>
+        //    {
+        //        Hashtable ht = new Hashtable();
+        //        foreach (XElement each in b.Elements())
+        //        {
+        //            ht.Add(each.Name.ToString(), each.Value.ToString());
+        //        }
+        //        Builds.Add(ht);
+        //        return b;
+        //    }).ToArray();
+        //    return Builds;
+        //}
+        public static ObservableCollection<XElement> LoadBuilds(string buildFilePath)
         {
-            ObservableCollection<Hashtable> Builds = new ObservableCollection<Hashtable>();
-            XElement root = XElement.Load(buildFilePath);
-            var tmp = root.Descendants("Build").Select(b =>
+            ObservableCollection<XElement> Builds = new ObservableCollection<XElement>();
+            FilePath = buildFilePath;
+            log.InfoFormat("Load build info from file {0}", buildFilePath);
+            Root = XElement.Load(buildFilePath);
+            var tmp = Root.Descendants("Build").Select(b =>
             {
-                Hashtable ht = new Hashtable();
-                foreach (XElement each in b.Elements())
-                {
-                    ht.Add(each.Name.ToString(), each.Value.ToString());
-                }
-                Builds.Add(ht);
+                Builds.Add(b);
                 return b;
             }).ToArray();
             return Builds;
         }
+        //}
+        //public static void UpdateBuild(Hashtable _build,string buildFilePath)
+        //{
+        //    XElement root = XElement.Load(buildFilePath);
+        //    var tmp = root.Descendants("Build").Where(e =>
+        //    {
+        //        return e.Element("PRODUCT_RELEASE").Value.ToString() == _build["PRODUCT_RELEASE"].ToString();
+        //    }
+        //    ).FirstOrDefault();
+        //    if(tmp==null)
+        //    {
+        //        log.Info("Add a new Build into the Builds XML");
+        //    }
+        //    else
+        //    {
+        //        log.Info("Modify the Build");
+        //        foreach(var each in _build.Keys)
+        //        {
+        //            tmp.Element(each.ToString()).SetValue(_build[each].ToString());
+        //        }
+        //    }
+        //    root.Save(buildFilePath);
+        //}
+        public static void SaveChanges()
+        {
+            try
+            {
+                Root.Save(FilePath);
+            }
+            catch(Exception e)
+            {
+                log.Error("Eorror occur while save build info changes into xml", e);
+            }
+        }
     }
     public class DomainAccess
     {
-        public static Hashtable LoadDomainInfo(string FilePath)
+        public static XElement Root;
+        public static string FilePath;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        public static ObservableCollection<XElement> LoadDomainInfo(string _FilePath)
         {
-            Hashtable DomainInfo = new Hashtable();
-            XElement root = XElement.Load(FilePath);
-            var tmp = root.Descendants("DomainVars").Elements().Select(e =>
+            // Hashtable DomainInfo = new Hashtable();
+            ObservableCollection<XElement> DomainInfo = new ObservableCollection<XElement>();
+            //XElement root = XElement.Load(FilePath);
+            FilePath = _FilePath;
+            Root = XElement.Load(FilePath);
+            var tmp = Root.Descendants("DomainVars").Elements().Select(e =>
             {
-                DomainInfo.Add(e.Name.ToString(), e.Value.ToString());
+                //DomainInfo.Add(e.Name.ToString(), e.Value.ToString());
+                DomainInfo.Add(e);
                 return e;
             }).ToList();
             return DomainInfo;
         }
+        public static void SaveChanges()
+        {
+            try
+            {
+                log.InfoFormat("save DomainInfo changes into xml: {0}", FilePath);
+                Root.Save(FilePath);
+            }
+            catch(Exception e)
+            {
+                log.Error("error occur while save domain info changes into xml", e);
+            }
+        }
     }
     public class MailAccess
     {
-        public static Hashtable LoadMailInfo(string FilePath)
+        public static XElement Root;
+        public static string FilePath;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        //public static Hashtable LoadMailInfo(string FilePath)
+        //{
+        //    Hashtable MailInfo = new Hashtable();
+        //    XElement root = XElement.Load(FilePath);
+        //    var tmp = root.Descendants("AsfEnvParam").Elements().Where(e => e.Name.ToString().Contains("SEND")).Select(e =>
+        //      {
+        //          MailInfo.Add(e.Name.ToString(), e.Value.ToString());
+        //          return e;
+        //      }
+        //    ).ToList();
+        //    return MailInfo;
+        //}
+        public static ObservableCollection<XElement> LoadMailInfo(string _filePath)
         {
-            Hashtable MailInfo = new Hashtable();
-            XElement root = XElement.Load(FilePath);
-            var tmp = root.Descendants("AsfEnvParam").Elements().Where(e => e.Name.ToString().Contains("SEND")).Select(e =>
-              {
-                  MailInfo.Add(e.Name.ToString(), e.Value.ToString());
-                  return e;
-              }
+            ObservableCollection<XElement> MailInfo = new ObservableCollection<XElement>();
+            FilePath = _filePath;
+            Root = XElement.Load(FilePath);
+            log.DebugFormat("load mail info from xml {0}", FilePath);
+            var tmp = Root.Descendants("AsfEnvParam").Elements().Where(e => e.Name.ToString().Contains("SEND")).Select(e =>
+            {
+                MailInfo.Add(e);
+                return e;
+            }
             ).ToList();
             return MailInfo;
+        }
+        public static void SaveChanges()
+        {
+            try
+            {
+                log.InfoFormat("save MailInfo changes into xml: {0}", FilePath);
+                Root.Save(FilePath);
+            }
+            catch (Exception e)
+            {
+                log.Error("error occur while save MailInfo into xml", e);
+            }
         }
     }
     public class GeneralAccess
     {
-        public static Hashtable LoadGeneralInfo(string FilePath)
+        public static XElement Root;
+        public static string FilePath;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        //public static Hashtable LoadGeneralInfo(string FilePath)
+        //{
+        //    Hashtable GeneralInfo = new Hashtable();
+        //    XElement root = XElement.Load(FilePath);
+        //    bool tmp;
+        //    var ttmp = root.Descendants("AsfEnvParam").Elements().Where(e => bool.TryParse(e.Value.ToString(), out tmp) && e.Name.ToString() != "SEND_EMAIL").Select(e =>
+        //             {
+        //                 GeneralInfo.Add(e.Name.ToString(), e.Value.ToString());
+        //                 return e;
+        //             }
+        //        ).ToArray();
+        //    return GeneralInfo;
+        //}
+        public static ObservableCollection<XElement> LoadGeneralInfo(string _filePath)
         {
-            Hashtable GeneralInfo = new Hashtable();
-            XElement root = XElement.Load(FilePath);
+            ObservableCollection<XElement> GeneralInfo = new ObservableCollection<XElement>();
+            FilePath = _filePath;
+            Root = XElement.Load(FilePath);
             bool tmp;
-            var ttmp = root.Descendants("AsfEnvParam").Elements().Where(e => bool.TryParse(e.Value.ToString(), out tmp) && e.Name.ToString() != "SEND_EMAIL").Select(e =>
-                     {
-                         GeneralInfo.Add(e.Name.ToString(), e.Value.ToString());
-                         return e;
-                     }
+            var ttmp = Root.Descendants("AsfEnvParam").Elements().Where(e => bool.TryParse(e.Value.ToString(), out tmp) && e.Name.ToString() != "SEND_EMAIL").Select(e =>
+            {
+                GeneralInfo.Add(e);
+                return e;
+            }
                 ).ToArray();
             return GeneralInfo;
+        }
+        public static void SaveChanges()
+        {
+            try
+            {
+                log.InfoFormat("save GeneralInfo changes into xml: {0}", FilePath);
+                Root.Save(FilePath);
+            }
+            catch (Exception e)
+            {
+                log.Error("error occur while save GeneralInfo into xml", e);
+            }
         }
     }
     public class HypervisorAccess
     {
-        public static Hashtable LoadHypervisorInfo(string FilePath)
+        public static XElement Root;
+        public static string FilePath;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        //public static Hashtable LoadHypervisorInfo(string FilePath)
+        //{
+        //    Hashtable HypervisorInfo = new Hashtable();
+        //    XElement root = XElement.Load(FilePath);
+        //    var tmp = root.Descendants("Hypervisor").Elements().Select(e =>
+        //    {
+        //        HypervisorInfo.Add(e.Name.ToString(), e.Value.ToString());
+        //        return e;
+        //    }
+        //    ).ToArray();
+        //    return HypervisorInfo;
+        //}
+        public static ObservableCollection<XElement> LoadHypervisorInfo(string _filePath)
         {
-            Hashtable HypervisorInfo = new Hashtable();
-            XElement root = XElement.Load(FilePath);
-            var tmp = root.Descendants("Hypervisor").Elements().Select(e =>
+            ObservableCollection<XElement> HypervisorInfo = new ObservableCollection<XElement>();
+            FilePath = _filePath;
+            Root = XElement.Load(FilePath);
+            var tmp = Root.Descendants("Hypervisor").Elements().Select(e =>
             {
-                HypervisorInfo.Add(e.Name.ToString(), e.Value.ToString());
+                HypervisorInfo.Add(e);
                 return e;
             }
             ).ToArray();
             return HypervisorInfo;
+        }
+        public static void SaveChanges()
+        {
+            try
+            {
+                log.InfoFormat("save HypervisorInfo changes into xml: {0}", FilePath);
+                Root.Save(FilePath);
+            }
+            catch (Exception e)
+            {
+                log.Error("error occur while save HypervisorInfo into xml", e);
+            }
         }
     }
     public class OSAccess

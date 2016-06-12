@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
+using System.Collections.ObjectModel;
+using System.Collections;
 
 namespace AsfStartUp.Auxiliary
 {
@@ -51,11 +53,11 @@ namespace AsfStartUp.Auxiliary
     #region reflesh UIPropertiry
     public class PropertyMessage
     {
-        public string PropertyName
+        public string Btn_Text
         { get; set; }
-        public PropertyMessage(string _propertyName)
+        public PropertyMessage(string _btnTxt)
         {
-            PropertyName = _propertyName;
+            Btn_Text = _btnTxt;
         }
     }
     public class PropertyMessageSetter
@@ -67,5 +69,6 @@ namespace AsfStartUp.Auxiliary
     }
     #endregion
 
- 
+  
+
 }
