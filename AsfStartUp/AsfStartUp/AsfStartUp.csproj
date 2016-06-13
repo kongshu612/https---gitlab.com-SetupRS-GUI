@@ -87,11 +87,13 @@
     <Compile Include="Auxiliary\JsonAccess.cs" />
     <Compile Include="Auxiliary\Message.cs" />
     <Compile Include="Auxiliary\TemplateSelectors\TemplateSelectors.cs" />
+    <Compile Include="Auxiliary\Update.cs" />
     <Compile Include="Auxiliary\XMLAccess.cs" />
     <Compile Include="Model\XMLData.cs" />
     <Compile Include="ViewModel\BuildsConfigure_ViewModel.cs" />
     <Compile Include="ViewModel\CallSetUpRS_ViewModel.cs" />
     <Compile Include="ViewModel\ConfigureRootPath_ViewModel.cs" />
+    <Compile Include="ViewModel\HomePageViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\BuildConfigureView.xaml.cs">
@@ -105,6 +107,9 @@
     </Compile>
     <Compile Include="View\GeneralConfigureView.xaml.cs">
       <DependentUpon>GeneralConfigureView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\SetUpView.xaml.cs">
+      <DependentUpon>SetUpView.xaml</DependentUpon>
     </Compile>
     <Page Include="Auxiliary\DataTemplates.xaml">
       <SubType>Designer</SubType>
@@ -130,6 +135,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\HypervisorConfigureView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -146,6 +155,9 @@
     <Compile Include="View\ConfigureRootPath.xaml.cs">
       <DependentUpon>ConfigureRootPath.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\HomePage.xaml.cs">
+      <DependentUpon>HomePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\HypervisorConfigureView.xaml.cs">
       <DependentUpon>HypervisorConfigureView.xaml</DependentUpon>
     </Compile>
@@ -154,6 +166,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\GeneralConfigureView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SetUpView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -188,6 +204,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Auxiliary\Images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="currentVersion.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

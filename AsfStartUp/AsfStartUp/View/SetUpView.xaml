@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="AsfStartUp.View.SetUpView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AsfStartUp"
+             mc:Ignorable="d"
+             >
+
+    <Grid DataContext="{Binding Main, Source={StaticResource Locator}}" Background="LightBlue">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions >
+        <TabControl Grid.Row="0" Margin="5" SelectedIndex="{Binding Path=DataContext.Index , RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}" Background="LightBlue">
+            <TabControl.Resources>
+                <Style TargetType="TabItem" x:Key="TabItemStyle">
+                    <Setter Property="Background" Value="LightBlue"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Background" Value="LightBlue"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="Sequence"  >
+                <ContentControl Content="{Binding RootPathInfoVM,Source={StaticResource Locator}}" DataContext="{Binding RootPathInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="Builds">
+                <ContentControl Content="{Binding BuildsInfoVM,Source={StaticResource Locator}}" DataContext="{Binding BuildsInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="RoleTemplate">
+                <ContentControl Content="{Binding OSBuildInfoVM,Source={StaticResource Locator}}" DataContext="{Binding OSBuildInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="General">
+                <ContentControl Content="{Binding GeneralInfoVM,Source={StaticResource Locator}}" DataContext="{Binding GeneralInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="Hypervisor">
+                <ContentControl Content="{Binding HypervisorInfoVM,Source={StaticResource Locator}}" DataContext="{Binding HypervisorInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="Domain">
+                <ContentControl Content="{Binding DomainInfoVM,Source={StaticResource Locator}}" DataContext="{Binding DomainInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="Mail">
+                <ContentControl Content="{Binding MailInfoVM,Source={StaticResource Locator}}" DataContext="{Binding MailInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+        </TabControl>
+        <Grid Grid.Row="1" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button Name="btn_Back" Content="&lt; Back" HorizontalAlignment="Center" Command="{Binding BackCommand}" Foreground="Blue"/>
+            <Button Name="btn_Next" Content="Next &gt;" HorizontalAlignment="Center" Grid.Column="1" Command="{Binding NextCommand}" Foreground="Blue"/>
+        </Grid>
+        <StatusBar Grid.Row="2" Background="LightGray">
+            <StatusBarItem>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Current Time:" Margin="5,0,5,0"/>
+                    <TextBlock Text="{Binding CurrentTime}" Grid.Column="1" Margin="5,0,5,0"/>
+                </Grid>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <ContentControl Content="{Binding StatusViewModel}"/>
+            </StatusBarItem>
+        </StatusBar>
+
+    </Grid>
+</UserControl>

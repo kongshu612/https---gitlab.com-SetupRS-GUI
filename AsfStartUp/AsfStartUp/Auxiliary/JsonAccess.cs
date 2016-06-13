@@ -43,7 +43,7 @@ namespace AsfStartUp.Auxiliary
                 t["BuildPath"] = e.BuildPath;
                 t["ReportingName"] = "";
                 t["Subdirectories"] = new JArray(e.Subdirectories);
-                t["SyncDirs"] = e.IsSync.ToString();
+                t["SyncDirs"] = bool.Parse(e.IsSync.ToString());
                 Builds.Add(t); 
                 return e;
             }).ToArray();

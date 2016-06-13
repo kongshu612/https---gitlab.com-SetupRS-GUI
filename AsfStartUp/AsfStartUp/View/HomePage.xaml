@@ -1,0 +1,36 @@
+﻿<Window x:Class="AsfStartUp.View.HomePage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AsfStartUp.View"
+        mc:Ignorable="d"
+        Title="ASF Start Up" Height="600" Width="850" DataContext="{Binding Path=Home,Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen" ContentRendered="win_FirstRun" >
+    <Grid DataContext="{Binding}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu>
+            <MenuItem Header="Tools">
+                <MenuItem Header="SetUp" Command="{Binding MenuCommand}" CommandParameter="SetUp"/>
+            </MenuItem>
+            <MenuItem Header="Preference">
+                <MenuItem Header="Update" Command="{Binding MenuCommand}" CommandParameter="Update"/>
+                <MenuItem Header="About"/>
+            </MenuItem>
+        </Menu>
+        <ToolBarTray Grid.Row="1">
+            <ToolBar>
+                <Button  Command="{Binding MenuCommand}" CommandParameter="SetUp">
+                    SetUp
+                </Button>
+                <Button Name="btn_Update" Margin="10,0" Command="{Binding MenuCommand}" CommandParameter="Update">
+                    Update
+                </Button>
+            </ToolBar>
+        </ToolBarTray>
+        <ContentControl Grid.Row="2" Content="{Binding CurrentData}" />
+    </Grid>
+</Window>

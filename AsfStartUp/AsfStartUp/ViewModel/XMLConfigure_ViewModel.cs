@@ -618,7 +618,7 @@ namespace AsfStartUp.ViewModel
                 _CValue = value;
                 if(_Element!=null)
                 {
-                    _Element.SetValue(_CValue.ToString());
+                    _Element.SetValue(_CValue.ToString().ToLower());
                     XMLAccessType.GetMethod("SaveChanges").Invoke(null,new object[] { });
                 }
                 RaisePropertyChanged("CValue");

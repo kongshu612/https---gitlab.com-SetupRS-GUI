@@ -42,6 +42,7 @@ namespace AsfStartUp.ViewModel
             ////    SimpleIoc.Default.Register<IDataService, DataService>();
             ////}
 
+            SimpleIoc.Default.Register<HomePageViewModel>();
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<ConfigureRootPath_ViewModel>();
             SimpleIoc.Default.Register<BuildsConfigure_ViewModel>();
@@ -52,7 +53,13 @@ namespace AsfStartUp.ViewModel
             SimpleIoc.Default.Register<DomainConfigure_ViewModel>();
             SimpleIoc.Default.Register<GeneralConfigure_ViewModel>();
         }
-
+        public HomePageViewModel Home
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<HomePageViewModel>();
+            }
+        }
         public MainViewModel Main
         {
             get

@@ -8,6 +8,8 @@ using System.Data;
 using System.Collections.Generic;
 using Microsoft.Practices.ServiceLocation;
 using AsfStartUp.Auxiliary;
+using AsfStartUp.View;
+using System.Windows;
 
 namespace AsfStartUp.ViewModel
 {
@@ -145,9 +147,13 @@ namespace AsfStartUp.ViewModel
         {
             if (Index == 6)
             {
+                HomePage hp = Application.Current.MainWindow as HomePage;
                 CallSetUpRS_ViewModel csuvm = new CallSetUpRS_ViewModel();
-                csuvm.GenerateJsonStep1();
-                csuvm.GenerateJsonStep2();
+                CallSetupRSView csrsv = new CallSetupRSView();
+                csrsv.DataContext = csuvm;
+                csrsv.Owner = hp;
+                csrsv.ShowDialog();
+
             }
             else
             {

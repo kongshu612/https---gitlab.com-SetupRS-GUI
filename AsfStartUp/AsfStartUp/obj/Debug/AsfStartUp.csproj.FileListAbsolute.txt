@@ -40,8 +40,13 @@ C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\BuildConfigureView.g.cs
 C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\BuildConfigureView.baml
 C:\DevelopSpace\AsfStartUp\AsfStartUp\bin\Debug\log4net.dll
 C:\DevelopSpace\AsfStartUp\AsfStartUp\bin\Debug\log4net.xml
-C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\AsfStartUp.csprojResolveAssemblyReference.cache
 C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\CallSetupRSView.g.cs
 C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\CallSetupRSView.baml
 C:\DevelopSpace\AsfStartUp\AsfStartUp\bin\Debug\Newtonsoft.Json.dll
 C:\DevelopSpace\AsfStartUp\AsfStartUp\bin\Debug\Newtonsoft.Json.xml
+C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\HomePage.g.cs
+C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\SetUpView.g.cs
+C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\HomePage.baml
+C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\SetUpView.baml
+C:\DevelopSpace\AsfStartUp\AsfStartUp\bin\Debug\currentVersion.txt
+C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\AsfStartUp.csprojResolveAssemblyReference.cache
