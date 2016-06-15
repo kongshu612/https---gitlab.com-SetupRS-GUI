@@ -115,9 +115,12 @@
     <Compile Include="View\GeneralConfigureView.xaml.cs">
       <DependentUpon>GeneralConfigureView.xaml</DependentUpon>
     </Compile>
+<<<<<<< HEAD
     <Compile Include="View\ProgressBarView.xaml.cs">
       <DependentUpon>ProgressBarView.xaml</DependentUpon>
     </Compile>
+=======
+>>>>>>> origin/master
     <Compile Include="View\SetUpView.xaml.cs">
       <DependentUpon>SetUpView.xaml</DependentUpon>
     </Compile>
@@ -183,10 +186,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+<<<<<<< HEAD
     <Page Include="View\ProgressBarView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+=======
+>>>>>>> origin/master
     <Page Include="View\SetUpView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -258,6 +264,11 @@
   </ItemGroup>
   <ItemGroup>
     <SplashScreen Include="Auxiliary\Images\loading.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="currentVersion.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

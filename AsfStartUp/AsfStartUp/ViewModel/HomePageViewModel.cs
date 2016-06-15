@@ -9,19 +9,28 @@ using System.Windows.Input;
 using Microsoft.Practices.ServiceLocation;
 using AsfStartUp.Auxiliary;
 using System.Windows;
+<<<<<<< HEAD
 using System.Diagnostics;
 using System.IO;
 using AsfStartUp.View;
+=======
+>>>>>>> origin/master
 
 namespace AsfStartUp.ViewModel
 {
     public class HomePageViewModel:ViewModelBase
     {
+<<<<<<< HEAD
 
         #region private members
         ViewModelBase _CurrentData;
         MainViewModel _mainViewData;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+=======
+        #region private members
+        ViewModelBase _CurrentData;
+        MainViewModel _mainViewData;
+>>>>>>> origin/master
         #endregion
 
         #region public properties
@@ -43,7 +52,10 @@ namespace AsfStartUp.ViewModel
         public HomePageViewModel()
         {
             _mainViewData = ServiceLocator.Current.GetInstance<MainViewModel>();
+<<<<<<< HEAD
             CreateShortCut();
+=======
+>>>>>>> origin/master
         }
         #endregion
 
@@ -52,7 +64,11 @@ namespace AsfStartUp.ViewModel
         {
             return Update.CheckUpdate();
         }
+<<<<<<< HEAD
         public void InstallUpdate(bool mode=false)
+=======
+        public void InstallUpdate()
+>>>>>>> origin/master
         {
             if (Update.CheckUpdate())
             {
@@ -67,6 +83,7 @@ namespace AsfStartUp.ViewModel
                 {
                     return;
                 }
+<<<<<<< HEAD
                 if(Update.InstallUpdate())
                 {
                     string localTmpFolder = Path.Combine(Directory.GetParent(System.Reflection.Assembly.GetExecutingAssembly().Location).Parent.ToString(), "ASFStartUpTmp");
@@ -77,12 +94,19 @@ namespace AsfStartUp.ViewModel
                     log.DebugFormat("call powershell with parameters: [ {0}]", updateScript);
                     Process powershellInstance = Process.Start(psi);
                     Application.Current.Shutdown();
+=======
+                if (!Update.InstallUpdate())
+                {
+                    MessageBox.Show("Error Occur, while update");
+                    return;
+>>>>>>> origin/master
                 }
             }
             else if(Update.IsError)
             {
                 return;
             }
+<<<<<<< HEAD
             else if(mode)
             {
                 MessageBox.Show("No Update Found","Update Info");
@@ -115,6 +139,12 @@ namespace AsfStartUp.ViewModel
                 writer.Flush();
             }
             return;
+=======
+            else
+            {
+                MessageBox.Show("No Update Found");
+            }
+>>>>>>> origin/master
         }
         #endregion
 
@@ -128,8 +158,12 @@ namespace AsfStartUp.ViewModel
             switch(param)
             {
                 case "SetUp": CurrentData = _mainViewData; break;
+<<<<<<< HEAD
                 case "Update": InstallUpdate(true); break;
                 case "Aboutme":ShowAboutme(); break;
+=======
+                case "Update": InstallUpdate(); break;
+>>>>>>> origin/master
             }
         }
         private ICommand _MenuCommand;

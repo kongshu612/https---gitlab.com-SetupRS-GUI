@@ -69,6 +69,7 @@ namespace AsfStartUp.Auxiliary
     }
     #endregion
 
+<<<<<<< HEAD
     #region ProgressMessage
     public class ProgressMessage
     {
@@ -90,5 +91,8 @@ namespace AsfStartUp.Auxiliary
     #endregion
 
 
+=======
+  
+>>>>>>> origin/master
 
 }

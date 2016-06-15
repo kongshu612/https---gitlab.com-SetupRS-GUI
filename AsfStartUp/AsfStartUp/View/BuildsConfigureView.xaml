@@ -44,7 +44,11 @@
                             <GridViewColumnHeader Content="Number" Background="Transparent" Foreground="Black" HorizontalAlignment="Stretch" FontSize="15"/>
                         </GridViewColumn.Header>
                     </GridViewColumn>
+<<<<<<< HEAD
                     <GridViewColumn Width="600" DisplayMemberBinding="{Binding BuildPath}">
+=======
+                    <GridViewColumn Width="500" DisplayMemberBinding="{Binding BuildPath}">
+>>>>>>> origin/master
                         <GridViewColumn.Header>
                             <GridViewColumnHeader Content="Path" Background="Transparent" Foreground="Black" HorizontalAlignment="Stretch" FontSize="15" HorizontalContentAlignment="Left"/>
                         </GridViewColumn.Header>

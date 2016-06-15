@@ -5,8 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AsfStartUp.View"
         mc:Ignorable="d"
+<<<<<<< HEAD
         Title="ASF Start Up" Height="600" Width="850" DataContext="{Binding Path=Home,Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen" ContentRendered="win_FirstRun" Background="LightGray" >
    
+=======
+        Title="ASF Start Up" Height="600" Width="850" DataContext="{Binding Path=Home,Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen" ContentRendered="win_FirstRun" >
+>>>>>>> origin/master
     <Grid DataContext="{Binding}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -14,6 +18,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Menu>
+<<<<<<< HEAD
             <Menu.Resources>
                 <Style TargetType="StackPanel">
                     <Setter Property="Orientation" Value="Horizontal"/>
@@ -87,6 +92,23 @@
                         <Image Source="../Auxiliary/Images/update16.png"/>
                         <TextBlock>Update</TextBlock>
                     </StackPanel>
+=======
+            <MenuItem Header="Tools">
+                <MenuItem Header="SetUp" Command="{Binding MenuCommand}" CommandParameter="SetUp"/>
+            </MenuItem>
+            <MenuItem Header="Preference">
+                <MenuItem Header="Update" Command="{Binding MenuCommand}" CommandParameter="Update"/>
+                <MenuItem Header="About"/>
+            </MenuItem>
+        </Menu>
+        <ToolBarTray Grid.Row="1">
+            <ToolBar>
+                <Button  Command="{Binding MenuCommand}" CommandParameter="SetUp">
+                    SetUp
+                </Button>
+                <Button Name="btn_Update" Margin="10,0" Command="{Binding MenuCommand}" CommandParameter="Update">
+                    Update
+>>>>>>> origin/master
                 </Button>
             </ToolBar>
         </ToolBarTray>

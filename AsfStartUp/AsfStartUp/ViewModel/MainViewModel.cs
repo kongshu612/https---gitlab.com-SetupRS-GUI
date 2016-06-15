@@ -145,7 +145,11 @@ namespace AsfStartUp.ViewModel
         private ICommand _NextCommand;
         private void ExecuteNextCommand(string param)
         {
+<<<<<<< HEAD
             if (Index == 6 )
+=======
+            if (Index == 6)
+>>>>>>> origin/master
             {
                 HomePage hp = Application.Current.MainWindow as HomePage;
                 CallSetUpRS_ViewModel csuvm = new CallSetUpRS_ViewModel();
@@ -165,7 +169,10 @@ namespace AsfStartUp.ViewModel
             if (Index == 6)
             {
                 PropertyMessageSetter.RefleshUI(new PropertyMessage("Generate"));
+<<<<<<< HEAD
                 return !string.IsNullOrEmpty(ServiceLocator.Current.GetInstance<ConfigureRootPath_ViewModel>().SelectedSequence);
+=======
+>>>>>>> origin/master
             }
             else
             {

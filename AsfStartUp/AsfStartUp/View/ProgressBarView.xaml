@@ -5,8 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AsfStartUp.View"
         mc:Ignorable="d"
+<<<<<<< HEAD
         Title="Progress" Height="100" Width="300" WindowStartupLocation="CenterOwner">
     <Grid Margin="20" DataContext="{Binding}">
         <ProgressBar Minimum="{Binding MinValue}" Maximum="{Binding MaxValue}" Value="{Binding CurrentValue}" />
+=======
+        Title="Progress of Background Work" Height="100" Width="300" >
+    <Grid Margin="20" DataContext="{Binding}">
+        <ProgressBar Minimum="0" Maximum="100" Value="{Binding CurrentValue}" />
+>>>>>>> origin/master
     </Grid>
 </Window>

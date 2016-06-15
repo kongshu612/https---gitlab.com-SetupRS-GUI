@@ -2,7 +2,10 @@
 FC:\DevelopSpace\AsfStartUp\AsfStartUp\App.xaml;;
 FC:\DevelopSpace\AsfStartUp\AsfStartUp\Auxiliary\DataTemplates.xaml;;
 FC:\DevelopSpace\AsfStartUp\AsfStartUp\Auxiliary\Styles.xaml;;
+<<<<<<< HEAD
 FC:\DevelopSpace\AsfStartUp\AsfStartUp\View\Aboutme.xaml;;
+=======
+>>>>>>> origin/master
 FC:\DevelopSpace\AsfStartUp\AsfStartUp\View\BuildConfigureView.xaml;;
 FC:\DevelopSpace\AsfStartUp\AsfStartUp\View\BuildsConfigureView.xaml;;
 FC:\DevelopSpace\AsfStartUp\AsfStartUp\View\CallSetupRSView.xaml;;
@@ -11,6 +14,9 @@ FC:\DevelopSpace\AsfStartUp\AsfStartUp\View\HomePage.xaml;;
 FC:\DevelopSpace\AsfStartUp\AsfStartUp\View\HypervisorConfigureView.xaml;;
 FC:\DevelopSpace\AsfStartUp\AsfStartUp\View\MainWindow.xaml;;
 FC:\DevelopSpace\AsfStartUp\AsfStartUp\View\GeneralConfigureView.xaml;;
+<<<<<<< HEAD
 FC:\DevelopSpace\AsfStartUp\AsfStartUp\View\ProgressBarView.xaml;;
+=======
+>>>>>>> origin/master
 FC:\DevelopSpace\AsfStartUp\AsfStartUp\View\SetUpView.xaml;;
 

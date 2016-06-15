@@ -119,6 +119,7 @@ namespace AsfStartUp.ViewModel
             }
             int count = Directory.EnumerateDirectories(TestsPath).Select(s => s.Split('\\').Last()).Where(s => subFolders.Contains(s.ToUpper())).Count();
             return count == 3;
+<<<<<<< HEAD
         }
         private void RemoveReadOnlyPropertiey()
         {
@@ -129,6 +130,8 @@ namespace AsfStartUp.ViewModel
                  e.Attributes &= ~FileAttributes.ReadOnly;
                  return e;
              }).ToArray();
+=======
+>>>>>>> origin/master
         }
         #endregion
 
@@ -144,7 +147,10 @@ namespace AsfStartUp.ViewModel
                 MessageBox.Show("Invalidate ASF Root Path. Please make sure Regression, TestAPI, Environments Folders exist under ASF Root Path: ${ASFRootPath}");
                 return;
             }
+<<<<<<< HEAD
             RemoveReadOnlyPropertiey();
+=======
+>>>>>>> origin/master
             RootPathSetter.SetRootPath(new RootPathMessage(ASFRootPath));      
             Components= new ObservableCollection<string>(Directory.EnumerateDirectories(ASFRootPath + @"\Tests\regression").Where(c => !c.Contains("Common")).ToList());
         }

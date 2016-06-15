@@ -49,8 +49,11 @@ C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\SetUpView.g.cs
 C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\HomePage.baml
 C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\SetUpView.baml
 C:\DevelopSpace\AsfStartUp\AsfStartUp\bin\Debug\currentVersion.txt
+<<<<<<< HEAD
 C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\ProgressBarView.g.cs
 C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\ProgressBarView.baml
 C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\Aboutme.g.cs
 C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\View\Aboutme.baml
+=======
+>>>>>>> origin/master
 C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\AsfStartUp.csprojResolveAssemblyReference.cache

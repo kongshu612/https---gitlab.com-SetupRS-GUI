@@ -9,9 +9,17 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+<<<<<<< HEAD
 using AsfStartUp.Auxiliary.Converters;
 using AsfStartUp.Auxiliary.TemplateSelectors;
 using AsfStartUp.View;
+=======
+using AsfStartUp;
+using AsfStartUp.Auxiliary.Converters;
+using AsfStartUp.Auxiliary.TemplateSelectors;
+using AsfStartUp.View;
+using AsfStartUp.ViewModel;
+>>>>>>> origin/master
 using System;
 using System.Diagnostics;
 using System.Windows;
