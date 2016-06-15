@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:AsfStartUp.View"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Border Background="LightBlue" Margin="5" CornerRadius="5">
-        <Grid DataContext="{Binding RootPathVM, Source={StaticResource Locator}}" Background="LightBlue">
+    <Border Background="LightBlue" Margin="5" CornerRadius="5" DataContext="{Binding}">
+        <Grid DataContext="{Binding}" Background="LightBlue">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -27,7 +27,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <ListView Name="lst_Component" Grid.Column="0" ItemsSource="{Binding Components}" SelectedItem="{Binding SelectedComponent}" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="1" >
+                <ListView Name="lst_Component" Grid.Column="0" SelectionMode="Single" ItemsSource="{Binding Components}" SelectedItem="{Binding SelectedComponent}" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderThickness="1" >
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="Background" Value="Transparent"/>
@@ -50,7 +50,7 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
-                <ListView Name="lst_Sequences" Grid.Column="1" ItemsSource="{Binding Sequences}" SelectedItem="{Binding SelectedSequence}" BorderThickness="1"  Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView Name="lst_Sequences" Grid.Column="1" SelectionMode="Single" ItemsSource="{Binding Sequences}" SelectedItem="{Binding SelectedSequence}" BorderThickness="1"  Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="Background" Value="Transparent"/>

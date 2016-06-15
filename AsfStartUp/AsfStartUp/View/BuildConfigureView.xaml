@@ -29,7 +29,7 @@
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding CKey}" ToolTip="We Can Add Description Here"/>
-                        <TextBox Text="{Binding CValue}" Grid.Column="1" Margin="0"/>
+                        <TextBox Text="{Binding CValue, UpdateSourceTrigger=PropertyChanged, Delay=100}" Grid.Column="1" Margin="0"/>
                     </Grid>
                 </DataTemplate>
                 <DataTemplate x:Key="ComboBoxEdit">

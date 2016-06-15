@@ -7,7 +7,7 @@
              xmlns:ds="clr-namespace:AsfStartUp.Auxiliary.TemplateSelectors"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600">
-    <Border Background="LightBlue" Margin="5" CornerRadius="5" DataContext="{Binding GeneralConfigure,Source={StaticResource Locator}}">
+    <Border Background="LightBlue" Margin="5" CornerRadius="5" DataContext="{Binding}">
         <Border.Resources>
             <cvt:StatusValueConverter x:Key="StatusValueConverter" d:IsDataSource="True" xmlns:cvt="clr-namespace:AsfStartUp.Auxiliary.Converters"/>
             <DataTemplate x:Key="RadioEdit">
@@ -29,7 +29,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{Binding CKey}" ToolTip="We Can Add Description here"/>
-                    <TextBox Text="{Binding CValue}" Grid.Column="1" Margin="0"/>
+                    <TextBox Text="{Binding CValue, UpdateSourceTrigger=PropertyChanged, Delay=100}" Grid.Column="1" Margin="0"/>
                 </Grid>
             </DataTemplate>
             <DataTemplate x:Key="ComboBoxEdit">

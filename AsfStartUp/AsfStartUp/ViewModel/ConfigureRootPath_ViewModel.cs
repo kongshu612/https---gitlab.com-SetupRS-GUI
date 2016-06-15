@@ -9,27 +9,12 @@ using System.Windows;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.IO;
+using AsfStartUp.Auxiliary;
 
 namespace AsfStartUp.ViewModel
 {
     public class ConfigureRootPath_ViewModel:ViewModelBase
     {
-        //#region private members
-        //private string _ASFRootPath;
-
-        //#endregion
-
-        //#region public properties
-        //#endregion
-
-        //#region private methods
-        //#endregion
-
-        //#region public Commands
-        //#endregion
-
-        //#region Constuctors
-        //#endregion
 
         #region private members
         private string _ASFRootPath;
@@ -59,12 +44,12 @@ namespace AsfStartUp.ViewModel
         {
             get
             {
-                return _SelectedComponent;
+                return _SelectedComponent==null? null : _SelectedComponent.Split('\\').Last();
             }
             set
             {
-                _SelectedComponent = value;
-                RaisePropertyChanged("");
+                _SelectedComponent = _Components.FirstOrDefault(e => e.Split('\\').Last() == value);
+                RaisePropertyChanged("SelectedComponent");
                 RefleshSequences();
             }
         }
@@ -73,12 +58,19 @@ namespace AsfStartUp.ViewModel
         {
             get
             {
-                return _SelectedSequence;
+                return _SelectedSequence==null? null : _SelectedSequence.Split('\\').Last();
             }
             set
             {
-                _SelectedSequence = value;
-                RaisePropertyChanged("");
+                _SelectedSequence = _Sequences.FirstOrDefault(e => e.Split('\\').Last() == value);
+                string EnvFile = Directory.EnumerateFiles(_SelectedSequence, "Sequence*Env*").FirstOrDefault();
+                if(EnvFile==null)
+                {
+                    MessageBox.Show("Do not find the Env file with the name Sequencexxx_Env.xml, under ${_SelectedSequence}. Or the env name is invalidated. Please check");
+                    return;
+                }
+                SequenceSelectedMessageSetter.SetSequenceSelected(new SequenceSelectedMessage(EnvFile,ASFRootPath+ @"\Tests\environments\Setup\Config\Template.xml"));
+                RaisePropertyChanged("SelectedSequence");
             }
         }
 
@@ -86,12 +78,13 @@ namespace AsfStartUp.ViewModel
         {
             get
             {
-                return _Components;
+                return _Components==null? null : new ObservableCollection<string>(_Components.Select(e=>e.Split('\\').Last()).ToArray());
             }
             set
             {
                 _Components = value;
-                RaisePropertyChanged("");
+                _SelectedComponent = _Components.FirstOrDefault();
+                RaisePropertyChanged("Components");
             }
         }
 
@@ -99,12 +92,13 @@ namespace AsfStartUp.ViewModel
         {
             get
             {
-                return _Sequences;
+                return _Sequences==null? null : new ObservableCollection<string>(_Sequences.Select(e=>e.Split('\\').Last()).ToArray());
             }
             set
             {
                 _Sequences = value;
-                RaisePropertyChanged("");
+                SelectedSequence = Sequences.FirstOrDefault();
+                RaisePropertyChanged("Sequences");
             }
         }
         #endregion
@@ -112,8 +106,29 @@ namespace AsfStartUp.ViewModel
         #region private methods
         private void RefleshSequences()
         {
-            string seqRootPath = ASFRootPath + @"\Tests\Regression\" + SelectedComponent;
-            Sequences = new ObservableCollection<string>(Directory.EnumerateDirectories(seqRootPath, "Seq*").Select(s => s.Split('\\').Last()).ToList());
+            Sequences = new ObservableCollection<string>(Directory.EnumerateDirectories(_SelectedComponent, "Seq*").ToList());
+        }
+        private bool IsRootPathValidate()
+        {
+            List<string> subFolders = new List<string>() { "REGRESSION", "TESTAPI", "ENVIRONMENTS" };
+            string TestsPath = ASFRootPath + @"\Tests\";
+            if(!Directory.Exists(TestsPath))
+            {
+                //MessageBox.Show("Do not find the Tests folder under ${ASFRootPath}");
+                return false;
+            }
+            int count = Directory.EnumerateDirectories(TestsPath).Select(s => s.Split('\\').Last()).Where(s => subFolders.Contains(s.ToUpper())).Count();
+            return count == 3;
+        }
+        private void RemoveReadOnlyPropertiey()
+        {
+            string FolderPath = ASFRootPath.TrimEnd('\\') + @"\Tests\environments";
+            var di = new DirectoryInfo(FolderPath);
+            var tmp = di.GetFiles("*", SearchOption.AllDirectories).Select(e =>
+             {
+                 e.Attributes &= ~FileAttributes.ReadOnly;
+                 return e;
+             }).ToArray();
         }
         #endregion
 
@@ -123,8 +138,15 @@ namespace AsfStartUp.ViewModel
             return !string.IsNullOrEmpty(ASFRootPath);
         }
         private void ExecuteLoadCommand()
-        {            
-            Components= new ObservableCollection<string>(Directory.EnumerateDirectories(ASFRootPath + @"\Tests\regression").Where(c => !c.Contains("Common")).Select(c => c.Split('\\').Last()).ToList());
+        {   
+            if(!IsRootPathValidate())
+            {
+                MessageBox.Show("Invalidate ASF Root Path. Please make sure Regression, TestAPI, Environments Folders exist under ASF Root Path: ${ASFRootPath}");
+                return;
+            }
+            RemoveReadOnlyPropertiey();
+            RootPathSetter.SetRootPath(new RootPathMessage(ASFRootPath));      
+            Components= new ObservableCollection<string>(Directory.EnumerateDirectories(ASFRootPath + @"\Tests\regression").Where(c => !c.Contains("Common")).ToList());
         }
         private ICommand _LoadCommand;
         public ICommand LoadCommand

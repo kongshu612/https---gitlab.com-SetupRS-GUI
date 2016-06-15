@@ -42,13 +42,24 @@ namespace AsfStartUp.ViewModel
             ////    SimpleIoc.Default.Register<IDataService, DataService>();
             ////}
 
+            SimpleIoc.Default.Register<HomePageViewModel>();
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<ConfigureRootPath_ViewModel>();
-            SimpleIoc.Default.Register<GeneralConfigure_ViewModel>();
-            SimpleIoc.Default.Register<HypervisorConfigure_ViewModel>();
             SimpleIoc.Default.Register<BuildsConfigure_ViewModel>();
+            SimpleIoc.Default.Register<OSBuildConfigure_ViewModel>();
+            SimpleIoc.Default.Register<GeneralInfoConfigure_ViewModel>();
+            SimpleIoc.Default.Register<HypervisorConfigure_ViewModel>();
+            SimpleIoc.Default.Register<MailConfigure_ViewModel>();
+            SimpleIoc.Default.Register<DomainConfigure_ViewModel>();
+            SimpleIoc.Default.Register<GeneralConfigure_ViewModel>();
         }
-
+        public HomePageViewModel Home
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<HomePageViewModel>();
+            }
+        }
         public MainViewModel Main
         {
             get
@@ -56,11 +67,53 @@ namespace AsfStartUp.ViewModel
                 return ServiceLocator.Current.GetInstance<MainViewModel>();
             }
         }
-        public ConfigureRootPath_ViewModel RootPathVM
+        public ConfigureRootPath_ViewModel RootPathInfoVM
         {
             get
             {
                 return ServiceLocator.Current.GetInstance<ConfigureRootPath_ViewModel>();
+            }
+        }
+        public BuildsConfigure_ViewModel BuildsInfoVM
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>();
+            }
+        }
+        public OSBuildConfigure_ViewModel OSBuildInfoVM
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<OSBuildConfigure_ViewModel>();
+            }
+        }
+        public GeneralInfoConfigure_ViewModel GeneralInfoVM
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<GeneralInfoConfigure_ViewModel>();
+            }
+        }
+        public HypervisorConfigure_ViewModel HypervisorInfoVM
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<HypervisorConfigure_ViewModel>();
+            }
+        }
+        public MailConfigure_ViewModel MailInfoVM
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<MailConfigure_ViewModel>();
+            }
+        }
+        public DomainConfigure_ViewModel DomainInfoVM
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<DomainConfigure_ViewModel>();
             }
         }
         public GeneralConfigure_ViewModel GeneralConfigure
@@ -68,21 +121,6 @@ namespace AsfStartUp.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<GeneralConfigure_ViewModel>();
-            }
-        }
-
-        public HypervisorConfigure_ViewModel HypervisorConfigure
-        {
-            get
-            {
-                return ServiceLocator.Current.GetInstance<HypervisorConfigure_ViewModel>();
-            }
-        }
-        public BuildsConfigure_ViewModel BuildsVM
-        {
-            get
-            {
-                return ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>();
             }
         }
 

@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Command;
 using Microsoft.Practices.ServiceLocation;
+using System.Collections;
+using AsfStartUp.Model;
+using AsfStartUp.Auxiliary;
+using System.Xml.Linq;
 
 namespace AsfStartUp.ViewModel
 {
@@ -59,7 +64,7 @@ namespace AsfStartUp.ViewModel
             set
             {
                 _CurrentViewModel = value;
-                RaisePropertyChanged("");
+                RaisePropertyChanged("CurrentViewModel");
             }
         }
 
@@ -74,7 +79,7 @@ namespace AsfStartUp.ViewModel
         {
             get
             {
-                return _CurrentViewModel.Header; ;
+                return _CurrentViewModel.Header; 
             }
         }
         #endregion
@@ -143,6 +148,7 @@ namespace AsfStartUp.ViewModel
             _DataCollections.Add(new MailConfigure_ViewModel());
             _DataCollections.Add(new DomainConfigure_ViewModel());
             CurrentViewModel = _DataCollections[0];
+           // Messenger.Default.Register<PropertyMessage>(this, pm => RaisePropertyChanged(pm.PropertyName));
         }
         #endregion
     }
@@ -165,7 +171,7 @@ namespace AsfStartUp.ViewModel
             set
             {
                 _GeneralData = value;
-                RaisePropertyChanged("");
+                RaisePropertyChanged("GeneralData");
             }
         }
         public string Header
@@ -177,23 +183,44 @@ namespace AsfStartUp.ViewModel
             set
             {
                 _Header = value;
+                RaisePropertyChanged("Header");
             }
         }
     }
     public class GeneralInfoConfigure_ViewModel : GeneralCommon_ViewModel
     {
-        #region private methods
-        void LoadGeneralInfo()
+        #region public methods
+        public void LoadGeneralInfo(string filePath)
         {
-            GeneralData = new ObservableCollection<GeneralDisplayData>();
-            GeneralData.Add(new GeneralDisplayData("XA/XD Environment only", true, CustomerType.Bool));
-            GeneralData.Add(new GeneralDisplayData("CLEANUP_ON_START", false, CustomerType.Bool));
-            GeneralData.Add(new GeneralDisplayData("CLEANUP_ON_EXIT", false, CustomerType.Bool));
-            GeneralData.Add(new GeneralDisplayData("ONEREPORT_SUBMIT", false, CustomerType.Bool));
-            GeneralData.Add(new GeneralDisplayData("Enironment Name", "EnvXDOnPremBasic", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("Automation Branch", "Main", CustomerType.Text));
+            filePath = filePath + @"\Tests\environments\Setup\Config\SetupRS.xml";
+            ObservableCollection<GeneralDisplayData> t = new ObservableCollection<GeneralDisplayData>();
+            ObservableCollection<XElement> GeneralRawInfo = AsfStartUp.Auxiliary.GeneralAccess.LoadGeneralInfo(filePath);
+            var tmp = GeneralRawInfo.Select(e =>
+            {
+                t.Add(new GeneralDisplayData(e,Type.GetType("AsfStartUp.Auxiliary.GeneralAccess")));
+                return e;
+            }).ToArray();
+            //foreach(var each in GeneralRawInfo.Keys)
+            //{
+            //    GeneralData.Add(new GeneralDisplayData(each.ToString(), bool.Parse(GeneralRawInfo[each].ToString()), CustomerType.Bool));
+            //}
+            GeneralData = new ObservableCollection<GeneralDisplayData>(t.OrderBy(e => e.CType).ToArray());
             Header = "General Configure";
+           // PropertyMessageSetter.RefleshUI(new PropertyMessage("Header"));
         }
+        #endregion
+        #region private methods
+        //void LoadGeneralInfo()
+        //{
+        //    GeneralData = new ObservableCollection<GeneralDisplayData>();
+        //    GeneralData.Add(new GeneralDisplayData("XA/XD Environment only", true, CustomerType.Bool));
+        //    GeneralData.Add(new GeneralDisplayData("CLEANUP_ON_START", false, CustomerType.Bool));
+        //    GeneralData.Add(new GeneralDisplayData("CLEANUP_ON_EXIT", false, CustomerType.Bool));
+        //    GeneralData.Add(new GeneralDisplayData("ONEREPORT_SUBMIT", false, CustomerType.Bool));
+        //    GeneralData.Add(new GeneralDisplayData("Enironment Name", "EnvXDOnPremBasic", CustomerType.Text));
+        //    GeneralData.Add(new GeneralDisplayData("Automation Branch", "Main", CustomerType.Text));
+        //    Header = "General Configure";
+        //}
         #endregion
 
         #region public Commands
@@ -202,26 +229,56 @@ namespace AsfStartUp.ViewModel
         #region Constuctors
         public GeneralInfoConfigure_ViewModel()
         {
-            GeneralData = new ObservableCollection<GeneralDisplayData>();
-            LoadGeneralInfo();
+            Messenger.Default.Register<RootPathMessage>(this, rpm => LoadGeneralInfo(rpm.RootPath));
+            Header = "Please Provide ASF Root Path in the first page";
         }
         #endregion
 
     }
     public class HypervisorConfigure_ViewModel:GeneralCommon_ViewModel
     {
-        #region private methods
-        void LoadGeneralInfo()
+        #region public methods
+        public void LoadHypervisorInfo(string filePath)
         {
-            GeneralData.Add(new GeneralDisplayData("Type", "SkyNet", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("Name", "Cloud9Asf", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("URL", "http://dummy", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("Network", "dummy", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("UserName", "dummy", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("Password", "dummy", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("HypStorageName", "dummy", CustomerType.Text));
+            GeneralData = new ObservableCollection<GeneralDisplayData>();
+            filePath += @"\Tests\environments\Setup\Config\Hypervisor.xml";
+            ObservableCollection<XElement> HypervisorRawInfo = AsfStartUp.Auxiliary.HypervisorAccess.LoadHypervisorInfo(filePath);
+            ObservableCollection<GeneralDisplayData> t = new ObservableCollection<GeneralDisplayData>();
+            var tmp = HypervisorRawInfo.Select(e =>
+            {
+                t.Add(new GeneralDisplayData(e,Type.GetType("AsfStartUp.Auxiliary.HypervisorAccess")));
+                return e;
+            }).ToArray();
+            //foreach(var each in HypervisorRawInfo.Keys)
+            //{
+            //    bool tmp;
+            //    if(bool.TryParse(HypervisorRawInfo[each].ToString(),out tmp))
+            //    {
+            //        GeneralData.Add(new GeneralDisplayData(each.ToString(), tmp, CustomerType.Bool));
+            //    }
+            //    else
+            //    {
+            //        GeneralData.Add(new GeneralDisplayData(each.ToString(), HypervisorRawInfo[each].ToString(), CustomerType.Text));
+            //    }
+            //}
+           // var tmp1 = GeneralData;
+            GeneralData = new ObservableCollection<GeneralDisplayData>(t.OrderBy(e => e.CType).ToArray());
             Header = "Hypervisor Configure";
+           // PropertyMessageSetter.RefleshUI(new PropertyMessage("Header"));
         }
+        #endregion
+        #region private methods
+        //void LoadGeneralInfo()
+        //{
+        //    GeneralData.Add(new GeneralDisplayData("Type", "SkyNet", CustomerType.Text));
+        //    GeneralData.Add(new GeneralDisplayData("Name", "Cloud9Asf", CustomerType.Text));
+        //    GeneralData.Add(new GeneralDisplayData("URL", "http://dummy", CustomerType.Text));
+        //    GeneralData.Add(new GeneralDisplayData("Network", "dummy", CustomerType.Text));
+        //    GeneralData.Add(new GeneralDisplayData("UserName", "dummy", CustomerType.Text));
+        //    GeneralData.Add(new GeneralDisplayData("Password", "dummy", CustomerType.Text));
+        //    GeneralData.Add(new GeneralDisplayData("HypStorageName", "dummy", CustomerType.Text));
+        //    Header = "Hypervisor Configure";
+        //}
         #endregion
 
         #region public Commands
@@ -230,28 +287,41 @@ namespace AsfStartUp.ViewModel
         #region Constuctors
         public HypervisorConfigure_ViewModel()
         {
-            GeneralData = new ObservableCollection<GeneralDisplayData>();
-            LoadGeneralInfo();
+            Messenger.Default.Register<RootPathMessage>(this, rpm => LoadHypervisorInfo(rpm.RootPath));
+            Header = "Please Provide ASF Root Path in the first page";
         }
         #endregion
 
     }
     public class DomainConfigure_ViewModel : GeneralCommon_ViewModel
     {
-        #region private methods
-        void LoadGeneralInfo()
+        #region public methods
+        public void LoadDomainInfo(string filePath)
         {
-            GeneralData = new ObservableCollection<GeneralDisplayData>();
-            GeneralData.Add(new GeneralDisplayData("DOMAIN_ADMINISTRATOR_USER", "Administrator@bvt.local", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("DOMAIN_ADMINISTRATOR_PASSWORD", "citrix", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("DOMAIN_ADMINISTRATOR_PREFIX", "Administrator", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("DOMAIN_USER_PREFIX", "user", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("DOMAIN_USER_COUNT", "4", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("DOMAIN_USER_PASSWORD", "Password123", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("DOMAIN_DNS_NAME", "bvt.local", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("HOSTNAME_PREFIX", "", CustomerType.Text));
-            GeneralData.Add(new GeneralDisplayData("REUSE_ENVIRONMENT", false, CustomerType.Bool));
+            filePath += @"\Tests\environments\Setup\Config\SetupRS.xml";
+            ObservableCollection<XElement> DomainInfo= AsfStartUp.Auxiliary.DomainAccess.LoadDomainInfo(filePath);
+            ObservableCollection<GeneralDisplayData> t = new ObservableCollection<GeneralDisplayData>();
+            var tmp = DomainInfo.Select(e =>
+            {
+                t.Add(new GeneralDisplayData(e,Type.GetType("AsfStartUp.Auxiliary.DomainAccess")));
+                return e;
+            }).ToArray();
+            //foreach(string each in DomainInfo.Keys)
+            //{
+            //    bool tmp;
+            //    if(bool.TryParse(DomainInfo[each].ToString(),out tmp))
+            //    {
+            //        GeneralData.Add(new GeneralDisplayData(each, tmp, CustomerType.Bool));
+            //    }
+            //    else
+            //    {
+            //        GeneralData.Add(new GeneralDisplayData(each, DomainInfo[each].ToString(), CustomerType.Text));
+            //    }
+            //}
+            //var tmp1 = GeneralData;
+            GeneralData = new ObservableCollection<GeneralDisplayData>(t.OrderBy(e => e.CType).ToArray());
             Header = "Domain Configure";
+           // PropertyMessageSetter.RefleshUI(new PropertyMessage("Header"));
         }
         #endregion
 
@@ -261,15 +331,44 @@ namespace AsfStartUp.ViewModel
         #region Constuctors
         public DomainConfigure_ViewModel()
         {
-            GeneralData = new ObservableCollection<GeneralDisplayData>();
-            LoadGeneralInfo();
+            Messenger.Default.Register<RootPathMessage>(this, rpm => LoadDomainInfo(rpm.RootPath));
+            Header = "Please Provide ASF Root Path in the first page";
         }
         #endregion
 
     }
     public class MailConfigure_ViewModel : GeneralCommon_ViewModel
     {
-
+        #region public methods
+        public void LoadMailInfo(string filePath)
+        {
+            GeneralData = new ObservableCollection<GeneralDisplayData>();
+            filePath += @"\Tests\environments\Setup\Config\SetupRS.xml";
+            ObservableCollection<XElement> MailRawInfo = AsfStartUp.Auxiliary.MailAccess.LoadMailInfo(filePath);
+            ObservableCollection<GeneralDisplayData> t = new ObservableCollection<GeneralDisplayData>();
+            var tmp = MailRawInfo.Select(e =>
+            {
+                t.Add(new GeneralDisplayData(e,Type.GetType("AsfStartUp.Auxiliary.MailAccess")));
+                return e;
+            }).ToArray();
+            //foreach(var each in MailRawInfo.Keys)
+            //{
+            //    bool tmp;
+            //    if(bool.TryParse(MailRawInfo[each].ToString(),out tmp))
+            //    {
+            //        GeneralData.Add(new GeneralDisplayData(each.ToString(), tmp, CustomerType.Bool));
+            //    }
+            //    else
+            //    {
+            //        GeneralData.Add(new GeneralDisplayData(each.ToString(), MailRawInfo[each].ToString(), CustomerType.Text));
+            //    }
+            //}
+            //var tmp1 = GeneralData;
+            GeneralData = new ObservableCollection<GeneralDisplayData>(t.OrderBy(e => e.CType).ToArray());
+            Header = "Mail Configure";
+            //PropertyMessageSetter.RefleshUI(new PropertyMessage("Header"));
+        }
+        #endregion
         #region private methods
         void LoadGeneralInfo()
         {
@@ -289,40 +388,82 @@ namespace AsfStartUp.ViewModel
         #region Constuctors
         public MailConfigure_ViewModel()
         {
-            GeneralData = new ObservableCollection<GeneralDisplayData>();
-            LoadGeneralInfo();
+            Messenger.Default.Register<RootPathMessage>(this, rpm => LoadMailInfo(rpm.RootPath));
+            Header = "Please Provide ASF Root Path in the first page";
         }
         #endregion
 
     }
     public class OSBuildConfigure_ViewModel:GeneralCommon_ViewModel
     {
-
+        #region private members
+        private ObservableCollection<OSInfo> _OSList;
+        #endregion
 
         #region private methods
+        private void LoadOSBuildInfo(string templateFile, string envFile)
+        {
+            GeneralData = new ObservableCollection<GeneralDisplayData>();
+            _OSList = AsfStartUp.Auxiliary.OSAccess.LoadOsInfo(templateFile);
+            ObservableCollection<AsfRoleInfo> tmp = AsfStartUp.Auxiliary.EnvAccess.LoadRoleInfo(envFile);
+            LoadRoleOSBuildInfo(tmp);
+            var tmp1 = GeneralData;
+            GeneralData = new ObservableCollection<GeneralDisplayData>(tmp1.OrderBy(e => e.CType).ToArray());
+            Header = "Role Template Build Configure";
+        }
         private Role_OSBuild_ViewModel ConsturctRoleOSBuild(string roleName)
         {
-            Role_OSBuild_ViewModel rovm = new Role_OSBuild_ViewModel();
-            ObservableCollection<string> OSList = new ObservableCollection<string>() { "Win7SP1x86", "Win7SP1x64", "Win81x64", "Win81x86", "Win10x86", "Win10x64", "Win2K8SP1x64", "Win2K12R2x64" };
-            rovm.OSList = new ObservableCollection<string>(OSList.Where(o => {
-                if(roleName.Contains("TS")|| roleName.Contains("DDC"))
-                {
-                    return o.Contains("2K");
-                }
-                if(roleName.Contains("VDA"))
-                {
-                    return !o.Contains("2K");
-                }
-                return true;
-            }).ToList());
-            rovm.SelectedOS = rovm.OSList.Where(l => l == "Win10x64").FirstOrDefault() == null ? "Win2K12R2x64" : "Win10x64";
-            rovm.BuildsList = new ObservableCollection<string>(ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>().Builds.Select(b =>
+            ObservableCollection<OSInfo> osList = new ObservableCollection<OSInfo>();
+            if (roleName.Contains("TSVDA") || roleName.Contains("DC") || roleName.Contains("SF"))
+                osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_server).ToList());
+            else if (roleName.Contains("VDA"))
+                osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_desktop).ToList());
+            else
+                osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType != OSInfo.OperatingSystemType.linux).ToList());
+            return new Role_OSBuild_ViewModel(roleName, osList);
+        }
+        private void LoadRoleOSBuildInfo(ObservableCollection<AsfRoleInfo> roleList)
+        {
+            GeneralData = new ObservableCollection<GeneralDisplayData>();
+            var tmp = roleList.Select(e =>
             {
-                BuildConfigure_ViewModel t = b as BuildConfigure_ViewModel;
-                return t.BuildName;
-            }).ToList<string>());
-            rovm.SelectedBuild = rovm.BuildsList[0];
-            return rovm;
+                ObservableCollection<OSInfo> osList = new ObservableCollection<OSInfo>();
+                if (e.RoleName.Contains("TSVDA") || e.RoleName.Contains("DC") || e.RoleName.Contains("SF"))
+                {
+                    if (string.IsNullOrEmpty(e.TemplateName))
+                    {
+                        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_server && !e.TemplateBlackList.Contains(o.DisplayName)).ToList());
+                    }
+                    else
+                    {
+                        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.DisplayName == e.TemplateName).ToList());
+                    }
+                }
+                else if (e.RoleName.Contains("VDA"))
+                {
+                    if (string.IsNullOrEmpty(e.TemplateName))
+                    {
+                        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_desktop && !e.TemplateBlackList.Contains(o.DisplayName)).ToList());
+                    }
+                    else
+                    {
+                        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.DisplayName == e.TemplateName).ToList());
+                    }
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(e.TemplateName))
+                    {
+                        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType != OSInfo.OperatingSystemType.linux && !e.TemplateBlackList.Contains(o.DisplayName)).ToList());
+                    }
+                    else
+                    {
+                        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.DisplayName == e.TemplateName).ToList());
+                    }
+                }
+                GeneralData.Add(new GeneralDisplayData(e.RoleName,new Role_OSBuild_ViewModel(e.RoleName,osList),CustomerType.Combo));              
+                return e;
+            }).ToList();
         }
         void LoadRoleOSBuildInfo()
         {
@@ -342,20 +483,21 @@ namespace AsfStartUp.ViewModel
         #region Constuctors
         public OSBuildConfigure_ViewModel()
         {
-            GeneralData = new ObservableCollection<GeneralDisplayData>();
-            LoadRoleOSBuildInfo();
+            Messenger.Default.Register<SequenceSelectedMessage>(this, ssm =>LoadOSBuildInfo(ssm.TemplateFilePath,ssm.SequenceEnvFilePath) );
+            Header = "Please Provide ASF Root Path in the first page";
         }
         #endregion
     }
     public class Role_OSBuild_ViewModel:ViewModelBase
     {
+        #region public members
+        public OSInfo _SelectedOS;
+        public BuildConfigure_ViewModel _SelectedBuild;
+        #endregion
+
         #region private members
         private string _RoleName;
-        private ObservableCollection<string> _OSList;
-        private string _SelectedOS;
-        private ObservableCollection<string> _BuildsList;
-        private BuildConfigure_ViewModel _SelectedBuild;
-
+        private ObservableCollection<OSInfo> _OSList;
         #endregion
 
         #region public properties
@@ -375,23 +517,19 @@ namespace AsfStartUp.ViewModel
         {
             get
             {
-                return _OSList;
-            }
-            set
-            {
-                _OSList = value;
-                RaisePropertyChanged("OSList");
+                return new ObservableCollection<string>(_OSList.Select(e => e.DisplayName).ToList());
             }
         }
         public string SelectedOS
         {
             get
             {
-                return _SelectedOS;
+                return _SelectedOS.DisplayName;
             }
             set
             {
-                _SelectedOS = value;
+                string osName = value as string;
+                _SelectedOS = _OSList.FirstOrDefault(e => e.DisplayName == osName);
                 RaisePropertyChanged("SelectedOS");
             }
         }
@@ -404,11 +542,6 @@ namespace AsfStartUp.ViewModel
                     BuildConfigure_ViewModel t = b as BuildConfigure_ViewModel;
                     return t.BuildName;
                 }).ToList<string>());
-            }
-            set
-            {
-                _BuildsList = value;
-                RaisePropertyChanged("BuildsList");
             }
         }
         public string SelectedBuild
@@ -434,19 +567,24 @@ namespace AsfStartUp.ViewModel
         #endregion
 
         #region constuctors
-        public Role_OSBuild_ViewModel()
+        public Role_OSBuild_ViewModel(string roleName, ObservableCollection<OSInfo> osList)
         {
-
+            _RoleName = roleName;
+            _OSList = osList;
+            _SelectedOS = _OSList.FirstOrDefault();
+            SelectedBuild = BuildsList.FirstOrDefault();
         }
         #endregion
 
     }
-    public class GeneralDisplayData:ViewModelBase
+    public class GeneralDisplayData:ViewModelBase,IComparable<GeneralDisplayData>,IEquatable<GeneralDisplayData>
     {
+        public XElement _Element;
         #region private members
         private string _CKey;
         private object _CValue;
         private CustomerType _CType;
+        private Type XMLAccessType;
 
         #endregion
 
@@ -455,13 +593,19 @@ namespace AsfStartUp.ViewModel
         {
             get
             {
-                return _CKey;
+                if(_Element!=null)
+                    return _Element.Name.ToString();
+                else
+                    return _CKey;
             }
-            set
-            {
-                _CKey = value;
-                RaisePropertyChanged("");
-            }
+            //set
+            //{
+            //    if(_Element!=null)
+            //        _Element.Name = value;
+            //    else
+            //        _CKey = value;
+            //    RaisePropertyChanged("CKey");
+            //}
         }
         public object CValue
         {
@@ -472,7 +616,12 @@ namespace AsfStartUp.ViewModel
             set
             {
                 _CValue = value;
-                RaisePropertyChanged("");
+                if(_Element!=null)
+                {
+                    _Element.SetValue(_CValue.ToString().ToLower());
+                    XMLAccessType.GetMethod("SaveChanges").Invoke(null,new object[] { });
+                }
+                RaisePropertyChanged("CValue");
             }
         }
         public CustomerType CType
@@ -481,18 +630,29 @@ namespace AsfStartUp.ViewModel
             {
                 return _CType;
             }
-            set
-            {
-                _CType = value;
-                RaisePropertyChanged("");
-            }
+            //set
+            //{
+            //    _CType = value;
+            //    RaisePropertyChanged("CType");
+            //}
         }
         #endregion
 
         #region private methods
         #endregion
 
-        #region public commands
+        #region public methods
+        public int CompareTo(GeneralDisplayData other)
+        {
+            if (this.CType == other.CType)
+                return 0;
+            else
+                return this.CType.CompareTo(other.CType);
+        }
+        public bool Equals(GeneralDisplayData other)
+        {
+            return this.CKey == other.CKey && this.CType == other.CType && this.CValue == other.CValue;
+        }
         #endregion
 
         #region constuctors
@@ -504,6 +664,23 @@ namespace AsfStartUp.ViewModel
         }
         public GeneralDisplayData()
         { }
+        public GeneralDisplayData(XElement _element,Type _xmlAccessType)
+        {
+            _CKey = _element.Name.ToString();
+            bool tmp;
+            if(bool.TryParse(_element.Value.ToString(), out tmp))
+            {
+                _CValue = tmp;
+                _CType = CustomerType.Bool;
+            }
+            else
+            {
+                _CValue = _element.Value.ToString();
+                _CType = CustomerType.Text;
+            }
+            _Element = _element;
+            XMLAccessType = _xmlAccessType;
+        }
         #endregion
     }
     public enum CustomerType{Text,Bool,Combo};

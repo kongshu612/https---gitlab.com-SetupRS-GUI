@@ -1,0 +1,58 @@
+﻿<Window x:Class="AsfStartUp.View.CallSetupRSView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AsfStartUp.View"
+        mc:Ignorable="d"
+        Title="Select Setup Mode" Height="300" Width="600" Background="LightBlue" WindowStartupLocation="CenterOwner">
+    <Border Background="LightBlue" Margin="10" DataContext="{Binding}">
+        <Grid DataContext="{Binding}">
+            <Grid.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Height" Value="100"/>
+                    <Setter Property="Margin" Value=" 5"/>
+                </Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Focusable" Value="False"/>
+                    <Setter Property="Foreground" Value="Blue"/>
+                </Style>
+            </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="*"/>
+            <!--ColumnDefinition Width="0.5*"/>
+            <ColumnDefinition Width="*"/-->
+        </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Command="{Binding GenerateCommand}" CommandParameter="JsonMode" >
+                <Button.Content>
+                    <TextBlock Text="Generate Json File Only" TextWrapping="WrapWithOverflow" />
+                </Button.Content>
+                <Button.ToolTip>This option will only generate json file.Please be noted that, all the configure will not set back to ASF DB.</Button.ToolTip>
+            </Button>
+            <Button Grid.Column="2"  Command="{Binding GenerateCommand}" CommandParameter="DevMode">
+                <Button.Content>
+                    <TextBlock Text="Write Configure back to ASF DB" TextWrapping="WrapWithOverflow"/>
+                </Button.Content>
+                <Button.ToolTip>This option write all the configure into ASF DB.Then you can call ASF command invoke-asfsequence or invoke-asfworkflow to start you ASF session</Button.ToolTip>
+            </Button>
+            <!--Button Grid.Column="4" Command="{Binding GenerateCommand}" CommandParameter="CleanEnv">
+                <Button.Content>
+                    <TextBlock Text="Start a Clean Environment" TextWrapping="WrapWithOverflow"/>
+                </Button.Content>
+                <Button.ToolTip>This option will help you to start a clean environment.all the steps before your sequence entry, that is , all steps covered by env0 and ASF will be executed. if you want to get a clean environment to develop a new sequence or help to triage, you can use this option.</Button.ToolTip>
+            </Button-->
+            <Button Grid.Column="4" Command="{Binding GenerateCommand}" CommandParameter="CompleteASFRun">
+                <Button.Content>
+                    <TextBlock Text="Start a Complete ASF Run" TextWrapping="WrapWithOverflow"/>
+                </Button.Content>
+                <Button.ToolTip>This option will execute a complete ASF Run, including: pre-prepare,env0,user sequence,post-prepare</Button.ToolTip>
+            </Button>
+
+        </Grid>
+    </Border>
+</Window>
