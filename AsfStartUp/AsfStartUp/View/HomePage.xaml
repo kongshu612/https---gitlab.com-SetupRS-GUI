@@ -5,12 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AsfStartUp.View"
         mc:Ignorable="d"
-<<<<<<< HEAD
-        Title="ASF Start Up" Height="600" Width="850" DataContext="{Binding Path=Home,Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen" ContentRendered="win_FirstRun" Background="LightGray" >
+        Title="ASF Start Up" Height="600" Width="1000" DataContext="{Binding Path=Home,Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen" ContentRendered="win_FirstRun" Background="LightGray" >
    
-=======
-        Title="ASF Start Up" Height="600" Width="850" DataContext="{Binding Path=Home,Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen" ContentRendered="win_FirstRun" >
->>>>>>> origin/master
     <Grid DataContext="{Binding}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -18,7 +14,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Menu>
-<<<<<<< HEAD
             <Menu.Resources>
                 <Style TargetType="StackPanel">
                     <Setter Property="Orientation" Value="Horizontal"/>
@@ -28,6 +23,27 @@
                     <Setter Property="VerticalAlignment" Value="Center"/>
                 </Style>
             </Menu.Resources>
+            <MenuItem>
+                <MenuItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="../Auxiliary/Images/File24.png"/>
+                        <TextBlock VerticalAlignment="Center">File</TextBlock>
+                    </StackPanel>
+                </MenuItem.Header>
+                <MenuItem>
+                    <MenuItem.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="../Auxiliary/Images/open16.png"/>
+                            <TextBlock VerticalAlignment="Center">Open</TextBlock>
+                        </StackPanel>
+                    </MenuItem.Header>
+                    <MenuItem Command="{Binding MenuCommand}" CommandParameter="OpenASequence">
+                        <MenuItem.Header>
+                            <TextBlock VerticalAlignment="Center">Open a sequence</TextBlock>
+                        </MenuItem.Header>
+                    </MenuItem>
+                </MenuItem>
+            </MenuItem>
             <MenuItem >
                 <MenuItem.Header>
                     <StackPanel Orientation="Horizontal">
@@ -35,13 +51,34 @@
                         <TextBlock  VerticalAlignment="Center">Tools</TextBlock>
                     </StackPanel>
                 </MenuItem.Header>
-                <MenuItem  Command="{Binding MenuCommand}" CommandParameter="SetUp">
+                <MenuItem>
                     <MenuItem.Header>
                         <StackPanel>
                             <Image Source="../Auxiliary/Images/setup16.png"/>
                             <TextBlock FontSize="12">SetUp</TextBlock>
                         </StackPanel>
                     </MenuItem.Header>
+                    <MenuItem Command="{Binding MenuCommand}" CommandParameter="JsonMode">
+                        <MenuItem.Header>
+                            <StackPanel>
+                                <TextBlock FontSize="12">Generate Json File</TextBlock>
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Command="{Binding MenuCommand}" CommandParameter="DevMode">
+                        <MenuItem.Header>
+                            <StackPanel>
+                                <TextBlock FontSize="12">Configure ASF DataBase</TextBlock>
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Command="{Binding MenuCommand}" CommandParameter="CompleteASFRun">
+                        <MenuItem.Header>
+                            <StackPanel>
+                                <TextBlock FontSize="12">Run A Sequence</TextBlock>
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
                 </MenuItem>
             </MenuItem>
             <MenuItem >
@@ -70,7 +107,7 @@
                 </MenuItem>
             </MenuItem>
         </Menu>
-        <ToolBarTray Grid.Row="1">
+        <!--ToolBarTray Grid.Row="1">
             <ToolBarTray.Resources>
                 <Style TargetType="StackPanel">
                     <Setter Property="Orientation" Value="Horizontal"/>
@@ -92,26 +129,9 @@
                         <Image Source="../Auxiliary/Images/update16.png"/>
                         <TextBlock>Update</TextBlock>
                     </StackPanel>
-=======
-            <MenuItem Header="Tools">
-                <MenuItem Header="SetUp" Command="{Binding MenuCommand}" CommandParameter="SetUp"/>
-            </MenuItem>
-            <MenuItem Header="Preference">
-                <MenuItem Header="Update" Command="{Binding MenuCommand}" CommandParameter="Update"/>
-                <MenuItem Header="About"/>
-            </MenuItem>
-        </Menu>
-        <ToolBarTray Grid.Row="1">
-            <ToolBar>
-                <Button  Command="{Binding MenuCommand}" CommandParameter="SetUp">
-                    SetUp
-                </Button>
-                <Button Name="btn_Update" Margin="10,0" Command="{Binding MenuCommand}" CommandParameter="Update">
-                    Update
->>>>>>> origin/master
                 </Button>
             </ToolBar>
-        </ToolBarTray>
+        </-->
         <ContentControl Grid.Row="2" Content="{Binding CurrentData}" />
     </Grid>
 </Window>

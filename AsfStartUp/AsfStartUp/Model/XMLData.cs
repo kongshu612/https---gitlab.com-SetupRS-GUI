@@ -55,6 +55,8 @@ namespace AsfStartUp.Model
         { get; set; }
         public ObservableCollection<string> AliasNameCollection
         { get; set; }
+        public ObservableCollection<string> SupportedBuildCollection
+        { get; set; }
         public AsfRoleInfo()
         {
             TemplateBlackList = new ObservableCollection<string>();
@@ -62,33 +64,35 @@ namespace AsfStartUp.Model
             HostType = ASFHostType.AsfManaged;
             IsInCloud = false;
             AliasNameCollection = new ObservableCollection<string>();
+            SupportedBuildCollection = new ObservableCollection<string>();
         }
 
-        public AsfRoleInfo(string roleName) : this()
+        public AsfRoleInfo(string roleName,string productVersion,ObservableCollection<string> _supportedBuildCollection) : this()
         {
             RoleName = roleName;
+            SupportedBuildCollection = _supportedBuildCollection;
+            ProductVersion = productVersion;
+        }
+        public AsfRoleInfo(string roleName, ObservableCollection<string> _supportedBuildCollection) : this()
+        {
+            RoleName = roleName;
+            SupportedBuildCollection = _supportedBuildCollection;
         }
 
-        public AsfRoleInfo(string roleName,string templateName,string productVersion):this()
+        public AsfRoleInfo(string roleName,string templateName,string productVersion, ObservableCollection<string> _supportedBuildCollection) :this()
         {
             RoleName = roleName;
             TemplateName = templateName;
             ProductVersion = productVersion;
+            SupportedBuildCollection = _supportedBuildCollection;
         }
-        public AsfRoleInfo(string roleName, ObservableCollection<string> templateBlackList,string productVersion):this()
+        public AsfRoleInfo(string roleName, ObservableCollection<string> templateBlackList,string productVersion, ObservableCollection<string> _supportedBuildCollection) :this()
         {
             RoleName = roleName;
             TemplateBlackList = templateBlackList;
             ProductVersion = productVersion;
+            SupportedBuildCollection = _supportedBuildCollection;
         }
-        //public AsfRoleInfo(string roleName,string hostName,InstallMode mode,ObservableCollection<string> templateCollection= null ,string productVersion= "") :this()
-        //{
-        //    RoleName = roleName;
-        //    HostName = hostName;
-        //    Mode = mode;
-        //    ProductVersion = productVersion;
-        //    TemplateCollection = templateCollection;
-        //}
         public static ASFHostType ConvertToASFHostType(string hostType)
         {
             switch(hostType)

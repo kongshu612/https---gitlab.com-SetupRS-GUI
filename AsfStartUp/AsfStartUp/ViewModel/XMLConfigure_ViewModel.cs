@@ -238,11 +238,11 @@ namespace AsfStartUp.ViewModel
     public class HypervisorConfigure_ViewModel:GeneralCommon_ViewModel
     {
         #region public methods
-        public void LoadHypervisorInfo(string filePath)
+        public void LoadHypervisorInfo(string filePath,HypervisorAccess.ATRType _asfType)
         {
             GeneralData = new ObservableCollection<GeneralDisplayData>();
             filePath += @"\Tests\environments\Setup\Config\Hypervisor.xml";
-            ObservableCollection<XElement> HypervisorRawInfo = AsfStartUp.Auxiliary.HypervisorAccess.LoadHypervisorInfo(filePath);
+            ObservableCollection<XElement> HypervisorRawInfo = AsfStartUp.Auxiliary.HypervisorAccess.LoadHypervisorInfo(filePath, _asfType);
             ObservableCollection<GeneralDisplayData> t = new ObservableCollection<GeneralDisplayData>();
             var tmp = HypervisorRawInfo.Select(e =>
             {
@@ -287,7 +287,7 @@ namespace AsfStartUp.ViewModel
         #region Constuctors
         public HypervisorConfigure_ViewModel()
         {
-            Messenger.Default.Register<RootPathMessage>(this, rpm => LoadHypervisorInfo(rpm.RootPath));
+            Messenger.Default.Register<RootPathMessage>(this, rpm => LoadHypervisorInfo(rpm.RootPath,rpm.ASFType));
             Header = "Please Provide ASF Root Path in the first page";
         }
         #endregion
@@ -394,10 +394,16 @@ namespace AsfStartUp.ViewModel
         #endregion
 
     }
+    /// <summary>
+    /// This Class is an abstract class to provide Os Build info by each Role.
+    /// </summary>
     public class OSBuildConfigure_ViewModel:GeneralCommon_ViewModel
     {
         #region private members
         private ObservableCollection<OSInfo> _OSList;
+        #endregion
+
+        #region public Properties
         #endregion
 
         #region private methods
@@ -410,71 +416,87 @@ namespace AsfStartUp.ViewModel
             var tmp1 = GeneralData;
             GeneralData = new ObservableCollection<GeneralDisplayData>(tmp1.OrderBy(e => e.CType).ToArray());
             Header = "Role Template Build Configure";
+            // low performance. we need to increase the performance. use reference count
+            ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>().UpdateBuildSet();
         }
-        private Role_OSBuild_ViewModel ConsturctRoleOSBuild(string roleName)
+        //private Role_OSBuild_ViewModel ConsturctRoleOSBuild(string roleName)
+        //{
+        //    ObservableCollection<OSInfo> osList = new ObservableCollection<OSInfo>();
+        //    if (roleName.Contains("TSVDA") || roleName.Contains("DC") || roleName.Contains("SF"))
+        //        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_server).ToList());
+        //    else if (roleName.Contains("VDA"))
+        //        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_desktop).ToList());
+        //    else
+        //        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType != OSInfo.OperatingSystemType.linux).ToList());
+        //    return new Role_OSBuild_ViewModel(roleName, osList);
+        //}
+        private ObservableCollection<OSInfo> LoadOSSet(AsfRoleInfo e)
         {
             ObservableCollection<OSInfo> osList = new ObservableCollection<OSInfo>();
-            if (roleName.Contains("TSVDA") || roleName.Contains("DC") || roleName.Contains("SF"))
-                osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_server).ToList());
-            else if (roleName.Contains("VDA"))
-                osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_desktop).ToList());
+            if (e.RoleName.Contains("TSVDA") || e.RoleName.Contains("DC") || e.RoleName.Contains("SF"))
+            {
+                if (string.IsNullOrEmpty(e.TemplateName))
+                {
+                    osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_server && !e.TemplateBlackList.Contains(o.DisplayName)).ToList());
+                }
+                else
+                {
+                    osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.DisplayName == e.TemplateName).ToList());
+                }
+            }
+            else if (e.RoleName.Contains("VDA"))
+            {
+                if (string.IsNullOrEmpty(e.TemplateName))
+                {
+                    osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_desktop && !e.TemplateBlackList.Contains(o.DisplayName)).ToList());
+                }
+                else
+                {
+                    osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.DisplayName == e.TemplateName).ToList());
+                }
+            }
             else
-                osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType != OSInfo.OperatingSystemType.linux).ToList());
-            return new Role_OSBuild_ViewModel(roleName, osList);
+            {
+                if (string.IsNullOrEmpty(e.TemplateName))
+                {
+                    osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType != OSInfo.OperatingSystemType.linux && !e.TemplateBlackList.Contains(o.DisplayName)).ToList());
+                }
+                else
+                {
+                    osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.DisplayName == e.TemplateName).ToList());
+                }
+            }
+            return osList;
         }
         private void LoadRoleOSBuildInfo(ObservableCollection<AsfRoleInfo> roleList)
         {
             GeneralData = new ObservableCollection<GeneralDisplayData>();
             var tmp = roleList.Select(e =>
             {
-                ObservableCollection<OSInfo> osList = new ObservableCollection<OSInfo>();
-                if (e.RoleName.Contains("TSVDA") || e.RoleName.Contains("DC") || e.RoleName.Contains("SF"))
+                ObservableCollection<OSInfo> osList = LoadOSSet(e);
+                ObservableCollection<string> validateBuildSet = new ObservableCollection<string>();
+                if(!string.IsNullOrEmpty(e.ProductVersion))
                 {
-                    if (string.IsNullOrEmpty(e.TemplateName))
-                    {
-                        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_server && !e.TemplateBlackList.Contains(o.DisplayName)).ToList());
-                    }
-                    else
-                    {
-                        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.DisplayName == e.TemplateName).ToList());
-                    }
-                }
-                else if (e.RoleName.Contains("VDA"))
-                {
-                    if (string.IsNullOrEmpty(e.TemplateName))
-                    {
-                        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_desktop && !e.TemplateBlackList.Contains(o.DisplayName)).ToList());
-                    }
-                    else
-                    {
-                        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.DisplayName == e.TemplateName).ToList());
-                    }
+                    validateBuildSet.Add(e.ProductVersion);
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(e.TemplateName))
-                    {
-                        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType != OSInfo.OperatingSystemType.linux && !e.TemplateBlackList.Contains(o.DisplayName)).ToList());
-                    }
-                    else
-                    {
-                        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.DisplayName == e.TemplateName).ToList());
-                    }
+                    validateBuildSet = e.SupportedBuildCollection;
                 }
-                GeneralData.Add(new GeneralDisplayData(e.RoleName,new Role_OSBuild_ViewModel(e.RoleName,osList),CustomerType.Combo));              
+                GeneralData.Add(new GeneralDisplayData(e.RoleName,new Role_OSBuild_ViewModel(e.RoleName,osList,validateBuildSet),CustomerType.Combo));              
                 return e;
             }).ToList();
         }
-        void LoadRoleOSBuildInfo()
-        {
-            GeneralData = new ObservableCollection<GeneralDisplayData>();
-            GeneralData.Add(new GeneralDisplayData("VDA-1", ConsturctRoleOSBuild("VDA-1"), CustomerType.Combo));
-            GeneralData.Add(new GeneralDisplayData("TSVDA-1", ConsturctRoleOSBuild("TSVDA-1"), CustomerType.Combo));
-            GeneralData.Add(new GeneralDisplayData("CLI-1", ConsturctRoleOSBuild("CLI-1"), CustomerType.Combo));
-            GeneralData.Add(new GeneralDisplayData("DDC-1", ConsturctRoleOSBuild("DDC-1"), CustomerType.Combo));
-            GeneralData.Add(new GeneralDisplayData("VDA-2", ConsturctRoleOSBuild("VDA-2"), CustomerType.Combo));
-            Header = "Role OS Build Configure";
-        }
+        //void LoadRoleOSBuildInfo()
+        //{
+        //    GeneralData = new ObservableCollection<GeneralDisplayData>();
+        //    GeneralData.Add(new GeneralDisplayData("VDA-1", ConsturctRoleOSBuild("VDA-1"), CustomerType.Combo));
+        //    GeneralData.Add(new GeneralDisplayData("TSVDA-1", ConsturctRoleOSBuild("TSVDA-1"), CustomerType.Combo));
+        //    GeneralData.Add(new GeneralDisplayData("CLI-1", ConsturctRoleOSBuild("CLI-1"), CustomerType.Combo));
+        //    GeneralData.Add(new GeneralDisplayData("DDC-1", ConsturctRoleOSBuild("DDC-1"), CustomerType.Combo));
+        //    GeneralData.Add(new GeneralDisplayData("VDA-2", ConsturctRoleOSBuild("VDA-2"), CustomerType.Combo));
+        //    Header = "Role OS Build Configure";
+        //}
         #endregion
 
         #region public Commands
@@ -498,6 +520,7 @@ namespace AsfStartUp.ViewModel
         #region private members
         private string _RoleName;
         private ObservableCollection<OSInfo> _OSList;
+        private ObservableCollection<string> _buildsList;
         #endregion
 
         #region public properties
@@ -537,25 +560,26 @@ namespace AsfStartUp.ViewModel
         {
             get
             {
-                return new ObservableCollection<string>(ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>().Builds.Select(b =>
-                {
-                    BuildConfigure_ViewModel t = b as BuildConfigure_ViewModel;
-                    return t.BuildName;
-                }).ToList<string>());
+                return _buildsList;
             }
         }
         public string SelectedBuild
         {
             get
             {
-                return _SelectedBuild == null ? null : _SelectedBuild.BuildName;
+                return _SelectedBuild == null ? "" : _SelectedBuild.BuildName;
             }
             set
             {
-                string SBName = value;
-                GeneralCommon_ViewModel gcvm = ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>().Builds.Where(p => { return ((BuildConfigure_ViewModel)p).BuildName == SBName; }).FirstOrDefault();
-                _SelectedBuild = gcvm == null ? null : gcvm as BuildConfigure_ViewModel;
-                RaisePropertyChanged("SelectedBuild");
+                if (!string.IsNullOrEmpty(value))
+                {
+                    string SBName = value;
+                    GeneralCommon_ViewModel gcvm = ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>().Builds.Where(p => { return ((BuildConfigure_ViewModel)p).BuildName == SBName; }).FirstOrDefault();
+                    _SelectedBuild = gcvm == null ? null : gcvm as BuildConfigure_ViewModel;
+                    // low performance. we need to increase the performance. use reference count
+                    ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>().UpdateBuildSet();
+                    RaisePropertyChanged("SelectedBuild");
+                }
             }
         }
         #endregion
@@ -567,12 +591,13 @@ namespace AsfStartUp.ViewModel
         #endregion
 
         #region constuctors
-        public Role_OSBuild_ViewModel(string roleName, ObservableCollection<OSInfo> osList)
+        public Role_OSBuild_ViewModel(string roleName, ObservableCollection<OSInfo> osList,ObservableCollection<string> builds)
         {
             _RoleName = roleName;
             _OSList = osList;
+            _buildsList = builds;
             _SelectedOS = _OSList.FirstOrDefault();
-            SelectedBuild = BuildsList.FirstOrDefault();
+            SelectedBuild = BuildsList==null? null :BuildsList.FirstOrDefault();
         }
         #endregion
 

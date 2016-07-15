@@ -23,7 +23,7 @@
             <!--Button Name="btn_Add" Content="Add" Style="{StaticResource btnStytle}"  Command="{Binding AddCommand}"/>
             <Button Name="btn_Delete" Content="Delete" Style="{StaticResource btnStytle}"  Command="{Binding DeleteCommand}"/-->
         </StackPanel>
-        <ListView Margin="10,0" Name="lst_Builds" Grid.Row="1" ItemsSource="{Binding Builds}" SelectedItem="{Binding SelectedBuild}" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListView Margin="10,0" Name="lst_Builds" Grid.Row="1" ItemsSource="{Binding ValidateBuilds}" SelectedItem="{Binding SelectedBuild}" Background="Transparent" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -44,11 +44,7 @@
                             <GridViewColumnHeader Content="Number" Background="Transparent" Foreground="Black" HorizontalAlignment="Stretch" FontSize="15"/>
                         </GridViewColumn.Header>
                     </GridViewColumn>
-<<<<<<< HEAD
                     <GridViewColumn Width="600" DisplayMemberBinding="{Binding BuildPath}">
-=======
-                    <GridViewColumn Width="500" DisplayMemberBinding="{Binding BuildPath}">
->>>>>>> origin/master
                         <GridViewColumn.Header>
                             <GridViewColumnHeader Content="Path" Background="Transparent" Foreground="Black" HorizontalAlignment="Stretch" FontSize="15" HorizontalContentAlignment="Left"/>
                         </GridViewColumn.Header>

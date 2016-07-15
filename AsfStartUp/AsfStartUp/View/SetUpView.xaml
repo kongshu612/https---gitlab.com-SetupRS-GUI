@@ -4,16 +4,46 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AsfStartUp"
+             xmlns:vm="clr-namespace:AsfStartUp.ViewModel"
              mc:Ignorable="d"
              >
 
     <Grid DataContext="{Binding Main, Source={StaticResource Locator}}" Background="LightBlue">
-        <Grid.RowDefinitions>
+        <!--Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions >
-        <TabControl Grid.Row="0" Margin="5" SelectedIndex="{Binding Path=DataContext.Index , RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}" Background="LightBlue">
+        </Grid.RowDefinitions -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.Resources>
+            <HierarchicalDataTemplate DataType="{x:Type vm:TreeNode}" ItemsSource="{Binding ChildNodes}">
+                <TextBlock Text="{Binding DisplayName}"/>
+            </HierarchicalDataTemplate>
+        </Grid.Resources>
+        <TreeView Name="tv" ItemsSource="{Binding TreeNodes}" >
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem">
+                    <EventSetter Event="Selected" Handler="TreeViewSelectedItemChanged"/>
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded,Mode=TwoWay}"/>
+                    <Setter Property="IsSelected" Value="{Binding IsSelected,Mode=TwoWay}"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Background" Value="Green"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+
+            </TreeView.ItemContainerStyle>
+        </TreeView>
+        <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="2" />
+        <TabControl Grid.Column="2" Margin="5"  Background="LightBlue">
             <TabControl.Resources>
                 <Style TargetType="TabItem" x:Key="TabItemStyle">
                     <Setter Property="Background" Value="LightBlue"/>
@@ -24,15 +54,9 @@
                     </Style.Triggers>
                 </Style>
             </TabControl.Resources>
-            <TabItem Header="Sequence"  >
+            <!--TabItem Header="Sequence"  >
                 <ContentControl Content="{Binding RootPathInfoVM,Source={StaticResource Locator}}" DataContext="{Binding RootPathInfoVM,Source={StaticResource Locator}}"/>
-            </TabItem>
-            <TabItem Header="Builds">
-                <ContentControl Content="{Binding BuildsInfoVM,Source={StaticResource Locator}}" DataContext="{Binding BuildsInfoVM,Source={StaticResource Locator}}"/>
-            </TabItem>
-            <TabItem Header="RoleTemplate">
-                <ContentControl Content="{Binding OSBuildInfoVM,Source={StaticResource Locator}}" DataContext="{Binding OSBuildInfoVM,Source={StaticResource Locator}}"/>
-            </TabItem>
+            </TabItem-->
             <TabItem Header="General">
                 <ContentControl Content="{Binding GeneralInfoVM,Source={StaticResource Locator}}" DataContext="{Binding GeneralInfoVM,Source={StaticResource Locator}}"/>
             </TabItem>
@@ -45,15 +69,21 @@
             <TabItem Header="Mail">
                 <ContentControl Content="{Binding MailInfoVM,Source={StaticResource Locator}}" DataContext="{Binding MailInfoVM,Source={StaticResource Locator}}"/>
             </TabItem>
+            <TabItem Header="RoleTemplate">
+                <ContentControl Content="{Binding OSBuildInfoVM,Source={StaticResource Locator}}" DataContext="{Binding OSBuildInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
+            <TabItem Header="Builds">
+                <ContentControl Content="{Binding BuildsInfoVM,Source={StaticResource Locator}}" DataContext="{Binding BuildsInfoVM,Source={StaticResource Locator}}"/>
+            </TabItem>
         </TabControl>
-        <Grid Grid.Row="1" Margin="5">
+        <!--Grid Grid.Row="1" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Button Name="btn_Back" Content="&lt; Back" HorizontalAlignment="Center" Command="{Binding BackCommand}" Foreground="Blue"/>
             <Button Name="btn_Next" Content="Next &gt;" HorizontalAlignment="Center" Grid.Column="1" Command="{Binding NextCommand}" Foreground="Blue"/>
-        </Grid>
+        </>
         <StatusBar Grid.Row="2" Background="LightGray">
             <StatusBarItem>
                 <Grid>
@@ -68,7 +98,7 @@
             <StatusBarItem HorizontalAlignment="Right">
                 <ContentControl Content="{Binding StatusViewModel}"/>
             </StatusBarItem>
-        </StatusBar>
+        </StatusBar-->
 
     </Grid>
 </UserControl>

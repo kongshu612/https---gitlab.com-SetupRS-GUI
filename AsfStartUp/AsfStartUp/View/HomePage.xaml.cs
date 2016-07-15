@@ -12,10 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using AsfStartUp.ViewModel;
-<<<<<<< HEAD
 using System.Threading;
-=======
->>>>>>> origin/master
 
 namespace AsfStartUp.View
 {
@@ -31,12 +28,8 @@ namespace AsfStartUp.View
         void win_FirstRun(object sender, EventArgs e)
         {
             HomePageViewModel hpvm = this.DataContext as HomePageViewModel;
-<<<<<<< HEAD
             Thread t = new Thread(()=>hpvm.InstallUpdate());
             t.Start();
-=======
-            hpvm.InstallUpdate();
->>>>>>> origin/master
         }
     }
 }

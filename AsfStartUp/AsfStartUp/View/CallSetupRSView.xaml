@@ -25,17 +25,10 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="*"/>
-<<<<<<< HEAD
             <!--ColumnDefinition Width="0.5*"/>
             <ColumnDefinition Width="*"/-->
         </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Command="{Binding GenerateCommand}" CommandParameter="JsonMode" >
-=======
-            <ColumnDefinition Width="0.5*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Command="{Binding GenerateCommand}" CommandParameter="" >
->>>>>>> origin/master
                 <Button.Content>
                     <TextBlock Text="Generate Json File Only" TextWrapping="WrapWithOverflow" />
                 </Button.Content>
@@ -47,22 +40,13 @@
                 </Button.Content>
                 <Button.ToolTip>This option write all the configure into ASF DB.Then you can call ASF command invoke-asfsequence or invoke-asfworkflow to start you ASF session</Button.ToolTip>
             </Button>
-<<<<<<< HEAD
             <!--Button Grid.Column="4" Command="{Binding GenerateCommand}" CommandParameter="CleanEnv">
-=======
-            <Button Grid.Column="4" Command="{Binding GenerateCommand}" CommandParameter="CleanEnv">
->>>>>>> origin/master
                 <Button.Content>
                     <TextBlock Text="Start a Clean Environment" TextWrapping="WrapWithOverflow"/>
                 </Button.Content>
                 <Button.ToolTip>This option will help you to start a clean environment.all the steps before your sequence entry, that is , all steps covered by env0 and ASF will be executed. if you want to get a clean environment to develop a new sequence or help to triage, you can use this option.</Button.ToolTip>
-<<<<<<< HEAD
             </Button-->
             <Button Grid.Column="4" Command="{Binding GenerateCommand}" CommandParameter="CompleteASFRun">
-=======
-            </Button>
-            <Button Grid.Column="6" Command="{Binding GenerateCommand}" CommandParameter="CompleteASFRun">
->>>>>>> origin/master
                 <Button.Content>
                     <TextBlock Text="Start a Complete ASF Run" TextWrapping="WrapWithOverflow"/>
                 </Button.Content>

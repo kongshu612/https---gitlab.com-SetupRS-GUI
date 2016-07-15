@@ -8,10 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-<<<<<<< HEAD
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("auxiliary/images/loading.gif")]
-=======
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("currentversion.txt")]
->>>>>>> origin/master
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("auxiliary/images/file24.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("auxiliary/images/open16.png")]
 
 

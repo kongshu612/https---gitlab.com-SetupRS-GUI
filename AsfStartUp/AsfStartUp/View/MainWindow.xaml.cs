@@ -25,7 +25,7 @@ namespace AsfStartUp
         public MainWindow()
         {
             InitializeComponent();
-            Messenger.Default.Register<PropertyMessage>(this, pm => { this.btn_Next.Content = pm.Btn_Text; });
+           // Messenger.Default.Register<PropertyMessage>(this, pm => { this.btn_Next.Content = pm.Btn_Text; });
         }
     }
 }

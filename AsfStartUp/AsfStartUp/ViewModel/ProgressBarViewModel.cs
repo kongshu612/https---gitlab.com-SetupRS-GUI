@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-<<<<<<< HEAD
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System.Windows.Threading;
@@ -108,13 +107,5 @@ namespace AsfStartUp.ViewModel
             timer.Start();
         }
         #endregion
-=======
-
-namespace AsfStartUp.ViewModel
-{
-    public class ProgressBarViewModel
-    {
-
->>>>>>> origin/master
     }
 }

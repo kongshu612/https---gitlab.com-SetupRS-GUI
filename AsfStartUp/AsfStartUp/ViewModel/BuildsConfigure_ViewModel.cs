@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Collections;
 using AsfStartUp.Auxiliary;
 using System.Xml.Linq;
+using Microsoft.Practices.ServiceLocation;
 
 namespace AsfStartUp.ViewModel
 {
@@ -19,6 +20,7 @@ namespace AsfStartUp.ViewModel
         
         #region private members
         private ObservableCollection<GeneralCommon_ViewModel> _Builds;
+        private ObservableCollection<GeneralCommon_ViewModel> _ValidateBuilds;
         private GeneralCommon_ViewModel _SelectedBuild;
         private string BuildFilePath;
        // private const string BuildFilePath = @"C:\asf\Tests\environments\Setup\Config\Builds.xml";
@@ -37,6 +39,18 @@ namespace AsfStartUp.ViewModel
                 RaisePropertyChanged("Builds");
             }
         }
+        public ObservableCollection<GeneralCommon_ViewModel> ValidateBuilds
+        {
+            get
+            {
+                return _ValidateBuilds;
+            }
+            set
+            {
+                _ValidateBuilds = value;
+                RaisePropertyChanged("ValidateBuilds");
+            }
+        }
         public GeneralCommon_ViewModel SelectedBuild
         {
             get
@@ -46,7 +60,7 @@ namespace AsfStartUp.ViewModel
             set
             {
                 _SelectedBuild = value;
-                RaisePropertyChanged("");
+                RaisePropertyChanged("SelectedBuild");
                 ((RelayCommand)DeleteCommand).RaiseCanExecuteChanged();
             }
         }
@@ -110,6 +124,24 @@ namespace AsfStartUp.ViewModel
                 _AddCommand = _AddCommand ?? new RelayCommand(ExecuteAddCommand, CanExecuteAddCommand);
                 return _AddCommand;
             }
+        }
+        #endregion
+
+        #region public methods
+        public void UpdateBuildSet()
+        {
+            var RoleBuildsTemplateInstance = ServiceLocator.Current.GetInstance<OSBuildConfigure_ViewModel>();
+            _ValidateBuilds = new ObservableCollection<GeneralCommon_ViewModel>();
+            var tmp = RoleBuildsTemplateInstance.GeneralData.Select(e =>
+            {
+                Role_OSBuild_ViewModel rosvm = e.CValue as Role_OSBuild_ViewModel;
+                if (rosvm._SelectedBuild != null && _ValidateBuilds.FirstOrDefault(t=>t==rosvm._SelectedBuild) ==null)
+                {
+                    _ValidateBuilds.Add(rosvm._SelectedBuild);
+                }
+                return e;
+            }).ToArray();
+            RaisePropertyChanged("ValidateBuilds");
         }
         #endregion
 

@@ -11,11 +11,8 @@ using System.IO;
 using System.Windows;
 using AsfStartUp.Auxiliary;
 using System.Windows.Input;
-<<<<<<< HEAD
 using AsfStartUp.View;
 using System.Threading;
-=======
->>>>>>> origin/master
 
 namespace AsfStartUp.ViewModel
 {
@@ -25,10 +22,18 @@ namespace AsfStartUp.ViewModel
         private string FilePath;
         private string SequenceNumber;
         private string TestSuite;
-        private string cmdToPowerShell;
         private string jsonFileFolder;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public void ExecuteCommand(string param)
+        {
+            Thread t = new Thread(() => this.backgroundWorker(param));
+            t.Start();
+            if (param == "JsonMode")
+                ShowProgress(0, 100);
+            else
+                ShowProgress(0, 200);
+        }
         public void GenerateJsonStep1()
         {
             if (Directory.Exists(jsonFileFolder))
@@ -51,17 +56,11 @@ namespace AsfStartUp.ViewModel
                 log.DebugFormat("the exit code of call setuprs is {0}", powershellInstance.ExitCode);
                 MessageBox.Show("Error occur while generating json file");
             }
-<<<<<<< HEAD
             log.Debug("step1 complete");
         }
         public void GenerateJsonStep2()
         {
             log.Debug("start the step2 to modify the json file");
-=======
-        }
-        public void GenerateJsonStep2()
-        {
->>>>>>> origin/master
             string jsonFile = Directory.EnumerateFiles(jsonFileFolder, "*").FirstOrDefault();
             if(string.IsNullOrEmpty(jsonFile))
             {
@@ -69,41 +68,31 @@ namespace AsfStartUp.ViewModel
                 return;
             }
             JsonAccess.UpdateJsonTemplate(jsonFile, ServiceLocator.Current.GetInstance<OSBuildConfigure_ViewModel>().GeneralData);
-<<<<<<< HEAD
             log.Debug("step2 completed");
-=======
->>>>>>> origin/master
         }
 
         private void WriteBackToASFDB()
         { }
         private void RemoveUserWorkFlow()
         { }
-<<<<<<< HEAD
         private void ShowProgress(int min, int max)
         {
             ProgressBarView pbv = new ProgressBarView();
             pbv.DataContext = new ProgressBarViewModel(min, max);
-            foreach(Window each in Application.Current.Windows)
-            {
-                if(each.Title== "Select Setup Mode")
-                {
-                    pbv.Owner = each;
-                    break;
-                }
-            }
+            pbv.Owner = Application.Current.MainWindow;
+            //foreach(Window each in Application.Current.Windows)
+            //{
+            //    if(each.Title== "Select Setup Mode")
+            //    {
+            //        pbv.Owner = each;
+            //        break;
+            //    }
+            //}
             pbv.ShowDialog();
         }
         private void backgroundWorker(string param)
         {
             log.InfoFormat("start call background worker by using mode: {0}", param);
-=======
-
-        #region public Command
-        private ICommand _GenerateCommand;
-        private void ExecuteGenerateCommand(string param)
-        {
->>>>>>> origin/master
             GenerateJsonStep1();
             GenerateJsonStep2();
             string jsonFile = Directory.EnumerateFiles(jsonFileFolder, "*").FirstOrDefault();
@@ -115,7 +104,6 @@ namespace AsfStartUp.ViewModel
             string cmd = @"-noexit cd " + ASFRootPath + @"; ipmo asf;Initialize-asfproject -InstallTests:$false -path " + jsonFile;
             switch (param)
             {
-<<<<<<< HEAD
                 case "DevMode":  break;
                 case "CleanEnv": RemoveUserWorkFlow(); cmd += @"; invoke-asfworkflow"; break;
                 case "CompleteASFRun":  cmd += @"; invoke-asfworkflow"; break;
@@ -125,18 +113,11 @@ namespace AsfStartUp.ViewModel
             {
                 ProgressMessageSetter.SendProgressMessage(new ProgressMessage(100));
                 return;
-=======
-                case "DevMode": break;
-                case "CleanEnv": RemoveUserWorkFlow();cmd += @"; invoke-asfworkflow"; break;
-                case "CompleteASFRun":cmd+=@"; invoke-asfworkflow"; break;
-                default:return;
->>>>>>> origin/master
             }
             log.DebugFormat("call powershell with parameters: [ {0}]", cmd);
             ProcessStartInfo psi = new ProcessStartInfo("powershell.exe");
             psi.Arguments = cmd;
             Process.Start(psi);
-<<<<<<< HEAD
             Thread.Sleep(3000);
             ProgressMessageSetter.SendProgressMessage(new ProgressMessage(200));
         }
@@ -151,8 +132,6 @@ namespace AsfStartUp.ViewModel
                 ShowProgress(0, 100);
             else
                 ShowProgress(0, 200);
-=======
->>>>>>> origin/master
         }
         private bool CanExecuteGenerateCommand(string param)
         {
@@ -180,11 +159,11 @@ namespace AsfStartUp.ViewModel
         }
         public CallSetUpRS_ViewModel()
         {
-            ConfigureRootPath_ViewModel crpvm = ServiceLocator.Current.GetInstance<ConfigureRootPath_ViewModel>();
-            ASFRootPath = crpvm.ASFRootPath;
+            MainViewModel mvm = ServiceLocator.Current.GetInstance<MainViewModel>();
+            ASFRootPath = mvm.ASFRootPath;
             FilePath = ASFRootPath + @"\Tests\environments\Setup\SetupRs.ps1";
-            SequenceNumber = crpvm.SelectedSequence.TrimStart(new char[] { 'S', 'e', 'q' });
-            TestSuite = crpvm.SelectedComponent;
+            SequenceNumber = mvm.SequenceName.TrimStart(new char[] { 'S', 'e', 'q' });
+            TestSuite = mvm.ComponentName;
             jsonFileFolder = @"c:\programdata\ASFStartUp\JsonPath";
         }
     }

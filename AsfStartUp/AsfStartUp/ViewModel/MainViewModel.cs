@@ -1,5 +1,6 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using System.Windows.Threading;
 using System;
 using System.Windows.Input;
@@ -10,6 +11,10 @@ using Microsoft.Practices.ServiceLocation;
 using AsfStartUp.Auxiliary;
 using AsfStartUp.View;
 using System.Windows;
+using System.Linq;
+using System.IO;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace AsfStartUp.ViewModel
 {
@@ -37,6 +42,10 @@ namespace AsfStartUp.ViewModel
         private string _CurrentTime;
        // private List<ViewModelBase> _ViewModelCollections;
         private int _index;
+        private ObservableCollection<TreeNode> _treeNodes;
+        private TreeNode _selectedNode;
+        private string _asfRootPath;
+        private string _sequenceName;
         #endregion
 
         #region public properties
@@ -49,7 +58,7 @@ namespace AsfStartUp.ViewModel
             set
             {
                 _StatusMessage = value;
-                RaisePropertyChanged("");
+                RaisePropertyChanged("StatusMessage");
             }
         }
         public string CurrentTime
@@ -64,6 +73,51 @@ namespace AsfStartUp.ViewModel
                 RaisePropertyChanged("");
             }
         }
+        public ObservableCollection<TreeNode> TreeNodes
+        {
+            get
+            {
+                return _treeNodes;
+            }
+            set
+            {
+                _treeNodes = value;
+                RaisePropertyChanged("TreeNodes");
+            }
+        }
+        public string ASFRootPath
+        {
+            get
+            {
+                return _asfRootPath;
+            }
+            set
+            {
+                if(value!=null)
+                {
+                    _asfRootPath = value;
+                    RootPathSetter.SetRootPath(new RootPathMessage(_asfRootPath, ASFType));
+                }
+            }
+        }
+        public string ComponentName { get; set; }
+        public string SequenceName
+        {
+            get
+            {
+                return _sequenceName;
+            }
+            set
+            {
+                if(null!=value)
+                {
+                    _sequenceName = value;
+                    if(SelectedNode!=null)
+                        SequenceSelectedMessageSetter.SetSequenceSelected(new SequenceSelectedMessage(Directory.EnumerateFiles( SelectedNode.FullPath,"Sequence*_env.xml").First(), ASFRootPath + @"\Tests\environments\Setup\Config\Template.xml"));
+                }
+            }
+        }
+        public HypervisorAccess.ATRType ASFType { get; set; }
 
         //public ViewModelBase CurrentViewModel
         //{
@@ -87,7 +141,23 @@ namespace AsfStartUp.ViewModel
             set
             {
                 _StatusViewModel = value;
-                RaisePropertyChanged("");
+                RaisePropertyChanged("StatusViewModel");
+            }
+        }
+
+        public TreeNode SelectedNode
+        {
+            get
+            {
+                return _selectedNode;
+            }
+            set
+            {
+                if (_selectedNode != value)
+                {
+                    _selectedNode = value;
+                    SelectTargetNode(ResolvePath(_selectedNode.FullPath));
+                }
             }
         }
 
@@ -100,7 +170,7 @@ namespace AsfStartUp.ViewModel
             set
             {
                 _index = value;
-                RaisePropertyChanged("");
+                RaisePropertyChanged("Index");
                 ((RelayCommand<string>)BackCommand).RaiseCanExecuteChanged();
                 ((RelayCommand<string>)NextCommand).RaiseCanExecuteChanged();
 
@@ -109,6 +179,14 @@ namespace AsfStartUp.ViewModel
         #endregion
 
         #region private methods
+        /// <summary>
+        /// Determine the type of ASF, Currently support ASF-TestRunner, ASF-Controller. 
+        /// Now Hardcode,logic need to add.
+        /// </summary>
+        private void DetermineASFType()
+        {
+            ASFType = HypervisorAccess.ATRType.Onelab;
+        }
         private void UpdateTime(object sender, EventArgs e)
         {
             CurrentTime = DateTime.Now.ToLongDateString() + "  " + DateTime.Now.ToLongTimeString();
@@ -119,6 +197,90 @@ namespace AsfStartUp.ViewModel
             timer.Interval = new TimeSpan(0, 0, 1);
             timer.Tick += new EventHandler(UpdateTime);
             timer.Start();
+        }
+        private List<string> ResolvePath(string seqxmlFile)
+        {
+            List<string> structs = new List<string>();
+            List<string> total = seqxmlFile.Split('\\').ToList();
+            for (int i = total.Count - 3; i < total.Count; i++)
+            {
+                structs.Add(total[i]);
+            }
+            return structs;
+        }
+        private bool CompareRootPath(string oldValue, string newValue)
+        {
+            return oldValue.Substring(0, oldValue.IndexOf(@"\Tests")).ToUpper() != newValue.Substring(0, newValue.IndexOf(@"\Tests")).ToUpper();
+        }
+        #endregion
+
+        #region public methods
+        public void LoadTreeNodeInfo(string _testsFolderPath)
+        {
+            TreeNodes = new ObservableCollection<TreeNode>();
+            if(Directory.Exists(_testsFolderPath+@"\Regression"))
+            {
+                TreeNode _parent = null ;
+                var tmp = Directory.EnumerateDirectories(_testsFolderPath + @"\Regression").Where(e => !e.ToLower().Contains("common")).Select(e =>
+                    {
+                        if (Directory.EnumerateDirectories(e, "Seq*").Count() > 0 && Directory.EnumerateDirectories(e, "Common").Count() == 1)
+                        {
+                            _parent = _parent ?? new TreeNode(_testsFolderPath + @"\Regression");
+                            TreeNode tn = new TreeNode(e,_parent);
+                            var t = Directory.EnumerateDirectories(e).Where(c => !c.ToLower().Contains("common")).Select(c =>
+                              {
+                                  tn.ChildNodes.Add(new TreeNode(c,tn,true));
+                                  return c;
+                              }).ToArray();
+                            _parent.ChildNodes.Add(tn);
+                        }
+                        return e;
+                    }).ToArray();
+                TreeNodes.Add(_parent);
+            }
+            if (Directory.Exists(_testsFolderPath + @"\componentbvts"))
+            {
+                TreeNode _parent = null;
+                var tmp = Directory.EnumerateDirectories(_testsFolderPath + @"\componentbvts").Where(e => !e.ToLower().Contains("common")).Select(e =>
+                {
+                    if (Directory.EnumerateDirectories(e,"Seq*").Count() >0 && Directory.EnumerateDirectories(e,"Common").Count()==1)
+                    {
+                        _parent = _parent ?? new TreeNode(_testsFolderPath + @"\componentbvts");
+                        TreeNode tn = new TreeNode(e,_parent);
+                        var t = Directory.EnumerateDirectories(e).Where(c => !c.ToLower().Contains("common")).Select(c =>
+                        {
+                            if(Directory.EnumerateFiles(c,"Sequence*_seq.xml").Count()==1)
+                                tn.ChildNodes.Add(new TreeNode(c,tn,true));
+                            return c;
+                        }).ToArray();
+                        _parent.ChildNodes.Add(tn);
+                    }
+                    return e;
+                 }).ToArray();
+                TreeNodes.Add(_parent);
+            }
+            ASFRootPath = _testsFolderPath.Replace(@"\Tests","");
+        }
+
+        public bool SelectTargetNode(List<string> LeafPath)
+        {
+            TreeNode first = TreeNodes.Where(e => e.DisplayName.ToUpper() == LeafPath[0].ToUpper()).FirstOrDefault();
+            if (first == null)
+                return false;
+            TreeNode second = first.ChildNodes.Where(e => e.DisplayName.ToUpper() == LeafPath[1].ToUpper()).FirstOrDefault();
+            if (second == null)
+                return false;
+            TreeNode third = second.ChildNodes.Where(e => e.DisplayName.ToUpper() == LeafPath[2].ToUpper()).FirstOrDefault();
+            if (third == null)
+                return false;
+            third.IsExpanded = true;
+            third.IsSelected = true;
+            ASFRootPath = _asfRootPath;
+            ComponentName = second.DisplayName;
+            SequenceName = third.DisplayName;
+            string EnvFile = Directory.EnumerateFiles(third.FullPath, "Sequence*_Env.xml").FirstOrDefault();
+           // SequenceSelectedMessageSetter.SetSequenceSelected(new SequenceSelectedMessage(Directory.EnumerateFiles(third.FullPath, "Sequence*_Env.xml").FirstOrDefault(), ASFRootPath + @"\Tests\environments\Setup\Config\Template.xml"));
+            return true;
         }
         #endregion
 
@@ -145,11 +307,7 @@ namespace AsfStartUp.ViewModel
         private ICommand _NextCommand;
         private void ExecuteNextCommand(string param)
         {
-<<<<<<< HEAD
             if (Index == 6 )
-=======
-            if (Index == 6)
->>>>>>> origin/master
             {
                 HomePage hp = Application.Current.MainWindow as HomePage;
                 CallSetUpRS_ViewModel csuvm = new CallSetUpRS_ViewModel();
@@ -169,10 +327,7 @@ namespace AsfStartUp.ViewModel
             if (Index == 6)
             {
                 PropertyMessageSetter.RefleshUI(new PropertyMessage("Generate"));
-<<<<<<< HEAD
                 return !string.IsNullOrEmpty(ServiceLocator.Current.GetInstance<ConfigureRootPath_ViewModel>().SelectedSequence);
-=======
->>>>>>> origin/master
             }
             else
             {
@@ -194,12 +349,159 @@ namespace AsfStartUp.ViewModel
         #region Constructors
         public MainViewModel()
         {
-            InitializeTimer();
-            Index = 0;
-            
+            Messenger.Default.Register<TreeNode>(this,tn => SelectedNode = tn);
+            DetermineASFType();
         }
 
         #endregion
 
     }
+    public class TreeViewModel:ViewModelBase
+    {
+        public ObservableCollection<TreeNode> TreeNodes { get; set; }
+        public TreeViewModel(ObservableCollection<TreeNode> _nodes)
+        {
+            TreeNodes = _nodes;
+        }
+    }
+    public class TreeNode:ViewModelBase
+    {
+        #region Data
+        private TreeNode _parent;
+        private bool _isSelected;
+        private bool _isExpanded;
+        private bool  _isLeaf;
+        #endregion
+        public string FullPath { get; set; }
+        public string DisplayName { get; set; }
+        public ObservableCollection<TreeNode> ChildNodes { get; set; }
+        public bool IsSelected
+        {
+            get
+            {
+                return _isSelected;
+            }
+            set
+            {
+                if(_isSelected!=value&&_isLeaf)
+                {
+                    _isSelected = value;
+                    RaisePropertyChanged("IsSelected");
+                }
+            }
+        }
+        public bool IsExpanded
+        {
+            get
+            {
+                return _isExpanded;
+            }
+            set
+            {
+                if (value && _parent != null)
+                    _parent.IsExpanded = value;
+                if(_isExpanded!=value)
+                {
+                    _isExpanded = value;
+                    RaisePropertyChanged("IsExpanded");
+                }
+            }
+        }
+
+        public TreeNode(string _fullPath):this(_fullPath,null)
+        {
+
+        }
+        public TreeNode(string _fullPath,TreeNode parent,bool isleaf=false)
+        {
+            _isLeaf = isleaf;
+            FullPath = _fullPath;
+            DisplayName = _fullPath.Split('\\').Last();
+            ChildNodes = new ObservableCollection<TreeNode>();
+            _parent = parent;
+            _isExpanded = false;
+            _isSelected = false;
+        }
+
+    }
+
+    public class TreeViewExtend
+    {
+
+        public static readonly DependencyProperty SIProperty = DependencyProperty
+              .RegisterAttached(
+               "SI", typeof(object), typeof(TreeViewExtend),
+               new PropertyMetadata(new object(), OnSelectedItemChanged));
+        public static object GetSI(TreeView treeView)
+        {
+            return treeView.GetValue(SIProperty);
+        }
+
+        public static void SetSI(TreeView treeView, object value)
+        {
+            treeView.SetValue(SIProperty, value);
+        }
+
+        private static void OnSelectedItemChanged(DependencyObject d,
+            DependencyPropertyChangedEventArgs args)
+        {
+            var treeView = d as TreeView;
+            if (treeView == null)
+            {
+                return;
+            }
+            treeView.SelectedItemChanged -= TreeViewItemChanged;
+            var treeViewItem = SelectTreeViewItemForBinding(args.NewValue,
+                treeView);
+            if (treeViewItem != null)
+            {
+                treeView.SetValue(SIProperty, treeViewItem);
+            }
+            treeView.SelectedItemChanged += TreeViewItemChanged;
+        }
+
+        private static void TreeViewItemChanged(object sender,
+            RoutedPropertyChangedEventArgs<object> e)
+        {
+            ((TreeView)sender).SetValue(SIProperty, e.NewValue);
+        }
+
+        private static TreeViewItem SelectTreeViewItemForBinding(
+            object dataItem, ItemsControl ic)
+        {
+            if (ic == null || dataItem == null)
+            {
+                return null;
+            }
+            IItemContainerGenerator generator = ic.ItemContainerGenerator;
+            using (generator.StartAt(generator.GeneratorPositionFromIndex(-1),
+                GeneratorDirection.Forward))
+            {
+                foreach (var t in ic.Items)
+                {
+                    bool isNewlyRealized;
+                    var tvi = generator.GenerateNext(out isNewlyRealized);
+                    if (isNewlyRealized)
+                    {
+                        generator.PrepareItemContainer(tvi);
+                    }
+                    if (t == dataItem)
+                    {
+                        return tvi as TreeViewItem;
+                    }
+
+                    var tmp = SelectTreeViewItemForBinding(dataItem,
+                        tvi as ItemsControl);
+                    if (tmp != null)
+                    {
+                        return tmp;
+                    }
+                    ((TreeViewItem)tvi).IsExpanded = false;
+                }
+            }
+            
+            return null;
+        }
+    }
+
 }

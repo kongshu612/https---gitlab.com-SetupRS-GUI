@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using GalaSoft.MvvmLight.Messaging;
 using AsfStartUp.Auxiliary;
+using AsfStartUp.ViewModel;
 
 namespace AsfStartUp.View
 {
@@ -25,7 +26,19 @@ namespace AsfStartUp.View
         public SetUpView()
         {
             InitializeComponent();
-            Messenger.Default.Register<PropertyMessage>(this, pm => { this.btn_Next.Content = pm.Btn_Text; });
+           // Messenger.Default.Register<PropertyMessage>(this, pm => { this.btn_Next.Content = pm.Btn_Text; });
+           
+        }
+        private void TreeViewSelectedItemChanged(object sender, RoutedEventArgs rea)
+        {
+            TreeViewItem tvi = sender as TreeViewItem;
+            if(tvi!=null)
+            {
+                tvi.BringIntoView();
+                TreeNode tn = tvi.DataContext as TreeNode;
+                SendSelectedNodeMessage.SendMessage(tn);
+                rea.Handled = true;
+            }
         }
     }
 }

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
 using System.Collections.ObjectModel;
 using System.Collections;
+using AsfStartUp.ViewModel;
+using AsfStartUp.Auxiliary;
 
 namespace AsfStartUp.Auxiliary
 {
@@ -21,9 +23,12 @@ namespace AsfStartUp.Auxiliary
     {
         public string RootPath
         { get; set; }
-        public RootPathMessage(string _rootPath)
+        public HypervisorAccess.ATRType ASFType
+        { get; set; }
+        public RootPathMessage(string _rootPath, HypervisorAccess.ATRType _asfType)
         {
             RootPath = _rootPath;
+            ASFType = _asfType;
         }
     }
     #endregion
@@ -69,7 +74,6 @@ namespace AsfStartUp.Auxiliary
     }
     #endregion
 
-<<<<<<< HEAD
     #region ProgressMessage
     public class ProgressMessage
     {
@@ -90,9 +94,14 @@ namespace AsfStartUp.Auxiliary
     }
     #endregion
 
-
-=======
-  
->>>>>>> origin/master
+    #region SelectedNodeMessage
+    public class SendSelectedNodeMessage
+    {
+        public static void SendMessage(TreeNode tn)
+        {
+            Messenger.Default.Send<TreeNode>(tn);
+        }
+    }
+    #endregion
 
 }

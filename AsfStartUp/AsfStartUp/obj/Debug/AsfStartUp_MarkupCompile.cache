@@ -10,20 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\DevelopSpace\AsfStartUp\AsfStartUp\App.xaml
-<<<<<<< HEAD
 13-1379575611
 
 30-556881882
-71-1077844786
+7253163773
 Auxiliary\DataTemplates.xaml;Auxiliary\Styles.xaml;View\Aboutme.xaml;View\BuildConfigureView.xaml;View\BuildsConfigureView.xaml;View\CallSetupRSView.xaml;View\ConfigureRootPath.xaml;View\HomePage.xaml;View\HypervisorConfigureView.xaml;View\MainWindow.xaml;View\GeneralConfigureView.xaml;View\ProgressBarView.xaml;View\SetUpView.xaml;
 auxiliary\images\loading.gif
-=======
-11-818190333
-
-27-65272793
-71-1077844786
-Auxiliary\DataTemplates.xaml;Auxiliary\Styles.xaml;View\BuildConfigureView.xaml;View\BuildsConfigureView.xaml;View\CallSetupRSView.xaml;View\ConfigureRootPath.xaml;View\HomePage.xaml;View\HypervisorConfigureView.xaml;View\MainWindow.xaml;View\GeneralConfigureView.xaml;View\SetUpView.xaml;
-
->>>>>>> origin/master
 False
 

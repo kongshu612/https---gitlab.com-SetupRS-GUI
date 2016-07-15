@@ -70,7 +70,7 @@ namespace AsfStartUp.Auxiliary
                     return r;
                 }
                 UpdateRoleOS(rovm);
-                if(!_buildsList.Contains(rovm._SelectedBuild))
+                if(!_buildsList.Contains(rovm._SelectedBuild)&& rovm._SelectedBuild!=null)
                 {
                     _buildsList.Add(rovm._SelectedBuild);
                 }

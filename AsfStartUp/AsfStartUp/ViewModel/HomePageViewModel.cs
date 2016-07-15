@@ -9,28 +9,19 @@ using System.Windows.Input;
 using Microsoft.Practices.ServiceLocation;
 using AsfStartUp.Auxiliary;
 using System.Windows;
-<<<<<<< HEAD
 using System.Diagnostics;
 using System.IO;
 using AsfStartUp.View;
-=======
->>>>>>> origin/master
 
 namespace AsfStartUp.ViewModel
 {
     public class HomePageViewModel:ViewModelBase
     {
-<<<<<<< HEAD
 
         #region private members
         ViewModelBase _CurrentData;
         MainViewModel _mainViewData;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-=======
-        #region private members
-        ViewModelBase _CurrentData;
-        MainViewModel _mainViewData;
->>>>>>> origin/master
         #endregion
 
         #region public properties
@@ -52,10 +43,7 @@ namespace AsfStartUp.ViewModel
         public HomePageViewModel()
         {
             _mainViewData = ServiceLocator.Current.GetInstance<MainViewModel>();
-<<<<<<< HEAD
             CreateShortCut();
-=======
->>>>>>> origin/master
         }
         #endregion
 
@@ -64,11 +52,7 @@ namespace AsfStartUp.ViewModel
         {
             return Update.CheckUpdate();
         }
-<<<<<<< HEAD
         public void InstallUpdate(bool mode=false)
-=======
-        public void InstallUpdate()
->>>>>>> origin/master
         {
             if (Update.CheckUpdate())
             {
@@ -83,7 +67,6 @@ namespace AsfStartUp.ViewModel
                 {
                     return;
                 }
-<<<<<<< HEAD
                 if(Update.InstallUpdate())
                 {
                     string localTmpFolder = Path.Combine(Directory.GetParent(System.Reflection.Assembly.GetExecutingAssembly().Location).Parent.ToString(), "ASFStartUpTmp");
@@ -94,19 +77,12 @@ namespace AsfStartUp.ViewModel
                     log.DebugFormat("call powershell with parameters: [ {0}]", updateScript);
                     Process powershellInstance = Process.Start(psi);
                     Application.Current.Shutdown();
-=======
-                if (!Update.InstallUpdate())
-                {
-                    MessageBox.Show("Error Occur, while update");
-                    return;
->>>>>>> origin/master
                 }
             }
             else if(Update.IsError)
             {
                 return;
             }
-<<<<<<< HEAD
             else if(mode)
             {
                 MessageBox.Show("No Update Found","Update Info");
@@ -139,13 +115,57 @@ namespace AsfStartUp.ViewModel
                 writer.Flush();
             }
             return;
-=======
-            else
-            {
-                MessageBox.Show("No Update Found");
-            }
->>>>>>> origin/master
         }
+        private void LoadTreeNodeInfo(string seqxmlFile)
+        {
+            List<string> resolvedPath = ResolvePath(seqxmlFile);
+            int length = seqxmlFile.Split('\\').Count();
+            string TestsFolderPath = seqxmlFile.Remove(seqxmlFile.IndexOf('\\' + seqxmlFile.Split('\\')[length - 3]));
+            _mainViewData.LoadTreeNodeInfo(TestsFolderPath);
+            _mainViewData.SelectTargetNode(resolvedPath);
+        }
+        private List<string> ResolvePath(string seqxmlFile)
+        {
+            List<string> structs = new List<string>();
+            List<string> total = seqxmlFile.Split('\\').ToList();
+            for(int i=total.Count-3;i<total.Count;i++)
+            {
+                structs.Add(total[i]);
+            }
+            return structs;
+        }
+
+        private void OpenASequence()
+        {
+        //    System.Windows.Forms.FolderBrowserDialog fbd = new System.Windows.Forms.FolderBrowserDialog();
+            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
+            ofd.Title = "Select the sequence env file: sequencexx_Env.xml";
+         //   ofd.InitialDirectory = @"c:\";
+            ofd.Filter = "Sequence env File (sequencex_Env.xml)|*sequence*_Env.xml";
+            Nullable<bool> result =  ofd.ShowDialog();
+            if(result==true)
+            {
+                CurrentData = _mainViewData;
+                string seqEnvName = ofd.FileName.Split('\\').Last();
+                LoadTreeNodeInfo(ofd.FileName.Remove(ofd.FileName.IndexOf("\\" + seqEnvName)));
+            }
+       //     System.Windows.Forms.DialogResult dr =  fbd.ShowDialog();
+        }
+        private void ExecuteRunCmd(string param)
+        {
+            CallSetUpRS_ViewModel csuvm = new CallSetUpRS_ViewModel();
+            csuvm.ExecuteCommand(param);
+        }
+        //private void test()
+        //{
+        //    MainViewModel mvm = ServiceLocator.Current.GetInstance<MainViewModel>();
+        //    mvm.SelectedNode = mvm.TreeNodes[0].ChildNodes[0].ChildNodes[0];
+        //}
+        //private void test2()
+        //{
+        //    MainViewModel mvm = ServiceLocator.Current.GetInstance<MainViewModel>();
+        //    mvm.SelectedNode = mvm.TreeNodes[0].ChildNodes[0].ChildNodes[1];
+        //}
         #endregion
 
         #region public Commands
@@ -157,13 +177,12 @@ namespace AsfStartUp.ViewModel
         {
             switch(param)
             {
-                case "SetUp": CurrentData = _mainViewData; break;
-<<<<<<< HEAD
+                case "OpenASequence": OpenASequence(); break;
+                case "JsonMode": ExecuteRunCmd("JsonMode"); break;
+                case "DevMode": ExecuteRunCmd("DevMode"); break;
+                case "CompleteASFRun": ExecuteRunCmd("CompleteASFRun"); break;
                 case "Update": InstallUpdate(true); break;
-                case "Aboutme":ShowAboutme(); break;
-=======
-                case "Update": InstallUpdate(); break;
->>>>>>> origin/master
+              //  case "Aboutme":test2(); break;
             }
         }
         private ICommand _MenuCommand;

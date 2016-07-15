@@ -12,11 +12,7 @@ namespace AsfStartUp.Auxiliary
      public class Update
     {
         public const string remoteServerPath= @"\\eng.citrite.net\global\TestSampleFiles\AsfStartUpServer";
-<<<<<<< HEAD
         public const string localVersionFile =  @"currentVersion.txt";
-=======
-        public const string localVersionFile = @"currentVersion.txt";
->>>>>>> origin/master
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public static bool IsForce;
         public static bool IsError;
@@ -58,7 +54,6 @@ namespace AsfStartUp.Auxiliary
             return false;
         }
 
-<<<<<<< HEAD
         private static bool DirectoryCopy(string sourceDirName,string destDirName)
         {
             DirectoryInfo dir = new DirectoryInfo(sourceDirName);
@@ -99,22 +94,13 @@ namespace AsfStartUp.Auxiliary
                 MessageBox.Show("Error Occur while download the remote files.Please try again.");
                 return false;
             }
-=======
-        public static bool InstallUpdate()
-        {
-            MessageBox.Show("update installed successfully");
->>>>>>> origin/master
             return true;
         }
 
         public static string GetCurrentVersion()
         {
-<<<<<<< HEAD
             string versionFile = Path.Combine(Directory.GetParent(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString(), localVersionFile);
             return File.ReadAllText(versionFile);
-=======
-            return File.ReadAllText(localVersionFile);
->>>>>>> origin/master
         }
     }
 }

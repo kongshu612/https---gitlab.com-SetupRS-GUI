@@ -82,11 +82,8 @@ namespace AsfStartUp {
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0")]
         public static void Main() {
-<<<<<<< HEAD
             SplashScreen splashScreen = new SplashScreen("auxiliary/images/loading.gif");
             splashScreen.Show(true);
-=======
->>>>>>> origin/master
             AsfStartUp.App app = new AsfStartUp.App();
             app.InitializeComponent();
             app.Run();
