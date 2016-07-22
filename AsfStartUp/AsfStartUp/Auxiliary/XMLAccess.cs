@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using AsfStartUp.Model;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using System.Windows;
 
 namespace AsfStartUp.Auxiliary
 {
@@ -18,22 +19,7 @@ namespace AsfStartUp.Auxiliary
         public static XElement Root;
         public static string FilePath;
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        //public static ObservableCollection<Hashtable> LoadBuilds(string buildFilePath)
-        //{
-        //    ObservableCollection<Hashtable> Builds = new ObservableCollection<Hashtable>();
-        //    XElement root = XElement.Load(buildFilePath);
-        //    var tmp = root.Descendants("Build").Select(b =>
-        //    {
-        //        Hashtable ht = new Hashtable();
-        //        foreach (XElement each in b.Elements())
-        //        {
-        //            ht.Add(each.Name.ToString(), each.Value.ToString());
-        //        }
-        //        Builds.Add(ht);
-        //        return b;
-        //    }).ToArray();
-        //    return Builds;
-        //}
+        
         public static ObservableCollection<XElement> LoadBuilds(string buildFilePath)
         {
             ObservableCollection<XElement> Builds = new ObservableCollection<XElement>();
@@ -79,6 +65,15 @@ namespace AsfStartUp.Auxiliary
             catch(Exception e)
             {
                 log.Error("Eorror occur while save build info changes into xml", e);
+                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    MessageBox.Show("Please remove the Readonly property for the file" + FilePath + "And Try to re-open This App", "Error", MessageBoxButton.OK);
+                    Application.Current.Shutdown();
+                }));
+                //Application.Current.Dispatcher.Invoke(() =>
+                //{
+                //    MessageBox.Show("Please remove the Readonly property for the file" + FilePath + "And Try to re-open This App", "Error", MessageBoxButton.OK);
+                //});
             }
         }
     }
@@ -112,6 +107,15 @@ namespace AsfStartUp.Auxiliary
             catch(Exception e)
             {
                 log.Error("error occur while save domain info changes into xml", e);
+                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    MessageBox.Show("Please remove the Readonly property for the file" + FilePath + "And Try to re-open This App", "Error", MessageBoxButton.OK);
+                    Application.Current.Shutdown();
+                }));
+                //Application.Current.Dispatcher.Invoke(() =>
+                //{
+                //    MessageBox.Show("Please remove the Readonly property for the file" + FilePath + "And Try to re-open This App", "Error", MessageBoxButton.OK);
+                //});
             }
         }
     }
@@ -156,6 +160,15 @@ namespace AsfStartUp.Auxiliary
             catch (Exception e)
             {
                 log.Error("error occur while save MailInfo into xml", e);
+                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    MessageBox.Show("Please remove the Readonly property for the file" + FilePath + "And Try to re-open This App", "Error", MessageBoxButton.OK);
+                    Application.Current.Shutdown();
+                }));
+                //Application.Current.Dispatcher.Invoke(() =>
+                //{
+                //    MessageBox.Show("Please remove the Readonly property for the file" + FilePath + "And Try to re-open This App", "Error", MessageBoxButton.OK);
+                //});
             }
         }
     }
@@ -201,6 +214,15 @@ namespace AsfStartUp.Auxiliary
             catch (Exception e)
             {
                 log.Error("error occur while save GeneralInfo into xml", e);
+                Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    MessageBox.Show("Please remove the Readonly property for the file" + FilePath + "And Try to re-open This App", "Error", MessageBoxButton.OK);
+                    Application.Current.Shutdown();
+                }));
+                //Application.Current.Dispatcher.Invoke(() =>
+                //{
+                //    MessageBox.Show("Please remove the Readonly property for the file" + FilePath + "And Try to re-open This App", "Error", MessageBoxButton.OK);
+                //});
             }
         }
     }
@@ -266,6 +288,11 @@ namespace AsfStartUp.Auxiliary
             catch (Exception e)
             {
                 log.Error("error occur while save HypervisorInfo into xml", e);
+                Application.Current.Dispatcher.BeginInvoke(new Action (() => 
+                    {
+                        MessageBox.Show("Please remove the Readonly property for the file" + FilePath + "And Try to re-open This App", "Error", MessageBoxButton.OK);
+                        Application.Current.Shutdown();
+                    }));
             }
         }
     }
@@ -327,7 +354,14 @@ namespace AsfStartUp.Auxiliary
                 {
                     JObject Jroot = JObject.Parse(File.ReadAllText(e));
                     string roleName = Jroot["Versions"][0]["Role"].Value<string>();
-                    ObservableCollection<string> products = new ObservableCollection<string>(Jroot["Versions"][0]["Version"].Values<string>());
+                    ObservableCollection<string> products = new ObservableCollection<string>();//(Jroot["Versions"].Select(t=>t["Version"].Values<string>()).ToArray());
+                    // here, we fix jira ticket WADA-2137
+                    var tmpSaver = Jroot["Versions"].Select(t => {
+                        t["Version"].Values<string>().ToList().ForEach(products.Add);
+                        log.DebugFormat("These product will be added for role: {0}",roleName);
+                        t["Version"].Values<string>().ToList().ForEach(log.Debug);
+                        return t;
+                    }).ToArray();
                     BuildSchemaList.Add(roleName, products);
                     log.DebugFormat("Load build info done. Add Key {0}, supported Build: {1}", roleName, products.ToString());
                     return e;

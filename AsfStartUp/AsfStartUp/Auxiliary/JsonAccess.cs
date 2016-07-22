@@ -34,9 +34,12 @@ namespace AsfStartUp.Auxiliary
         private static void UpdateBuilds(List<BuildConfigure_ViewModel> _selectedBuilds)
         {
             JArray Builds = root["Environment"]["Builds"] as JArray;
+            JObject WorkflowData = root["Environment"]["Workflow"]["Sequences"][2]["Data"] as JObject;
             Builds.Clear();
             var tmp = _selectedBuilds.Select(e =>
             {
+                log.DebugFormat("insert the build {0} into json file", e.BuildName);
+                log.InfoFormat("insert the build {0} into json file", e.BuildName);
                 JObject t = new JObject();
                 t["BuildId"] = e.BuildName;
                 t["BuildNumber"] = e.BuildNumber;
@@ -44,7 +47,16 @@ namespace AsfStartUp.Auxiliary
                 t["ReportingName"] = "";
                 t["Subdirectories"] = new JArray(e.Subdirectories);
                 t["SyncDirs"] = bool.Parse(e.IsSync.ToString());
-                Builds.Add(t); 
+                Builds.Add(t);
+                var BuildFriendlyNameList = WorkflowData.Properties().Where(dataProperty => dataProperty.Name.IndexOf("_BUILD_FRIENDLY_NAME") >= 0);
+                if (BuildFriendlyNameList.Where(b=>b.Name.IndexOf(e.BuildName.ToUpper())>=0).FirstOrDefault() == null)
+                {
+                    // here a hardcode, as in BuildConfigure_ViewModel, we put the Image-Full as the first, so here,just use the first.
+                    WorkflowData[e.BuildName.ToUpper() + "_BUILD_FRIENDLY_NAME"] = e.BuildName + @"\" + e.Subdirectories.FirstOrDefault();
+                    WorkflowData[e.BuildName.ToUpper() + "_LACI_FRIENDLY_NAME"] = e.BuildName + @"\" + e.Subdirectories.Where(sn => sn.IndexOf("LACI") >= 0).FirstOrDefault();
+                    log.DebugFormat("insert the build friendlyName {0} into json file", e.BuildName);
+                    log.InfoFormat("insert the build lacifriendlyName {0} into json file", e.BuildName);
+                }
                 return e;
             }).ToArray();
         }

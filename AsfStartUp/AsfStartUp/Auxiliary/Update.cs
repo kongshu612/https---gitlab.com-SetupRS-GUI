@@ -32,12 +32,12 @@ namespace AsfStartUp.Auxiliary
                 log.InfoFormat("Currently, the remote server is not ready");
                 return false;
             }
-            string latestVersion= GetCurrentVersion(); 
+            Version latestVersion=new Version(); 
             var tmp = File.ReadLines(donetxt).Select(l =>
             {
                 if(l.Contains("version"))
                 {
-                    latestVersion = l.Replace("version", " ").Trim();
+                    latestVersion = new Version(l.Replace("version", " ").Trim());
                 }
                 if(l.Contains("ForceMode"))
                 {
@@ -45,13 +45,9 @@ namespace AsfStartUp.Auxiliary
                 }
                 return l;
             }).ToArray();
-            string currentVersion = GetCurrentVersion();
+            Version currentVersion = GetCurrentVersion();
             log.InfoFormat("Current version is {0}, latest version is {1}", currentVersion, latestVersion);
-            if(string.Compare(latestVersion,currentVersion)!=0)
-            {
-                return true;
-            }
-            return false;
+            return latestVersion.CompareTo(currentVersion) > 0;
         }
 
         private static bool DirectoryCopy(string sourceDirName,string destDirName)
@@ -82,8 +78,10 @@ namespace AsfStartUp.Auxiliary
 
         public static bool DownloadPackets()
         {
-            string remoteFolder = Path.Combine(remoteServerPath, "Target");
-            string localTmpFolder = Path.Combine(Directory.GetParent(System.Reflection.Assembly.GetExecutingAssembly().Location).Parent.ToString(),"ASFStartUpTmp");
+            string remoteFolder = Path.Combine(remoteServerPath, "AsfStartUp");
+            string localTmpFolder = Path.Combine(Directory.GetParent(Directory.GetParent(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString()).ToString(),"ASFStartUpNew");
+            log.InfoFormat("the Remote path: {0}", remoteFolder);
+            log.InfoFormat("the local tmp path:{0}", localTmpFolder);
             return DirectoryCopy(remoteFolder, localTmpFolder);
         }
 
@@ -97,10 +95,10 @@ namespace AsfStartUp.Auxiliary
             return true;
         }
 
-        public static string GetCurrentVersion()
+        public static Version GetCurrentVersion()
         {
             string versionFile = Path.Combine(Directory.GetParent(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString(), localVersionFile);
-            return File.ReadAllText(versionFile);
+            return new Version(File.ReadAllText(versionFile));
         }
     }
 }

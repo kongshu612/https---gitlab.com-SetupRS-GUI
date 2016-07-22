@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AsfStartUp.View"
         mc:Ignorable="d"
-        Title="ASF Start Up" Height="600" Width="1000" DataContext="{Binding Path=Home,Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen" ContentRendered="win_FirstRun" Background="LightGray" >
+        Title="ASF Start Up" Height="600" Width="1000" DataContext="{Binding Path=Home,Source={StaticResource Locator}}" WindowStartupLocation="CenterScreen" ContentRendered="win_FirstRun" Background="LightGray" Closing="win_Closing" >
    
     <Grid DataContext="{Binding}">
         <Grid.RowDefinitions>

@@ -46,6 +46,7 @@ namespace AsfStartUp.ViewModel
         private TreeNode _selectedNode;
         private string _asfRootPath;
         private string _sequenceName;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #endregion
 
         #region public properties
@@ -119,19 +120,6 @@ namespace AsfStartUp.ViewModel
         }
         public HypervisorAccess.ATRType ASFType { get; set; }
 
-        //public ViewModelBase CurrentViewModel
-        //{
-        //    get
-        //    {
-        //        return _CurrentViewModel;
-        //    }
-        //    set
-        //    {
-        //        _CurrentViewModel = value;
-        //        RaisePropertyChanged("CurrentViewModel");
-        //    }
-        //}
-
         public ViewModelBase StatusViewModel
         {
             get
@@ -185,7 +173,16 @@ namespace AsfStartUp.ViewModel
         /// </summary>
         private void DetermineASFType()
         {
-            ASFType = HypervisorAccess.ATRType.Onelab;
+            if (Directory.EnumerateDirectories(@"c:\").Where(t => t.IndexOf("ASFTestRunner") >= 0).FirstOrDefault() != null)
+            {
+                log.Info("the machine is Onelab");
+                ASFType = HypervisorAccess.ATRType.Onelab;
+            }
+            else
+            {
+                log.Info("the machine isnot Onelab");
+                ASFType = HypervisorAccess.ATRType.Xenserver;
+            }
         }
         private void UpdateTime(object sender, EventArgs e)
         {
@@ -215,6 +212,24 @@ namespace AsfStartUp.ViewModel
         #endregion
 
         #region public methods
+        /// <summary>
+        /// Remove the readonly of the Configuration Folder Path
+        /// </summary>
+        /// <param name="FolderPath"></param>
+        public void RemoveReadonlyPropertyofConfigurationFolder(string FolderPath)
+        {
+            if(Directory.Exists(FolderPath))
+            {
+                log.InfoFormat("the target folder exist {0}", FolderPath);
+                var di = new DirectoryInfo(FolderPath);
+                var tmp = di.GetFiles("*", SearchOption.AllDirectories).Select(e =>
+                {
+                    log.InfoFormat("remove the readonly property for file {0}", e.Name);
+                    e.Attributes &= ~FileAttributes.ReadOnly;
+                    return e;
+                }).ToArray();
+            }
+        }
         public void LoadTreeNodeInfo(string _testsFolderPath)
         {
             TreeNodes = new ObservableCollection<TreeNode>();
@@ -260,6 +275,7 @@ namespace AsfStartUp.ViewModel
                 TreeNodes.Add(_parent);
             }
             ASFRootPath = _testsFolderPath.Replace(@"\Tests","");
+            RemoveReadonlyPropertyofConfigurationFolder(ASFRootPath + @"\Tests\Environments");
         }
 
         public bool SelectTargetNode(List<string> LeafPath)

@@ -44,6 +44,11 @@ namespace AsfStartUp.ViewModel
         {
             _mainViewData = ServiceLocator.Current.GetInstance<MainViewModel>();
             CreateShortCut();
+            if(File.Exists(@"c:\programdata\ASFStartUp\history.txt"))
+            {
+                log.InfoFormat("load selected file from history file");
+                LoadSelectedInfo(File.ReadAllText(@"c:\programdata\ASFStartUp\history.txt"));
+            }
         }
         #endregion
 
@@ -56,27 +61,32 @@ namespace AsfStartUp.ViewModel
         {
             if (Update.CheckUpdate())
             {
-                if (Update.IsForce)
+                //if (Update.IsForce)
+                //{
+                //    if (MessageBox.Show("Please Update software, Yes: Update online, No: exit this app", "Update Software", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                //    {
+                //        Application.Current.Shutdown();
+                //    }
+                //}
+                //else if (MessageBox.Show("New Version Found, Do you want to update it?", "Update Software", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                //{
+                //    return;
+                //}
+                Update.InstallUpdate();
+                if (mode)
                 {
-                    if (MessageBox.Show("Please Update software, Yes: Update online, No: exit this app", "Update Software", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-                    {
-                        Application.Current.Shutdown();
-                    }
-                }
-                else if (MessageBox.Show("New Version Found, Do you want to update it?", "Update Software", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-                {
-                    return;
-                }
-                if(Update.InstallUpdate())
-                {
-                    string localTmpFolder = Path.Combine(Directory.GetParent(System.Reflection.Assembly.GetExecutingAssembly().Location).Parent.ToString(), "ASFStartUpTmp");
+                    string localTmpFolder = Path.Combine(Directory.GetParent(Directory.GetParent(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString()).ToString(), "ASFStartUpNew");
                     string updateScript = Path.Combine(localTmpFolder, "update.ps1");
                     ProcessStartInfo psi = new ProcessStartInfo("powershell.exe");
                     psi.WindowStyle = ProcessWindowStyle.Hidden;
+                    psi.WorkingDirectory = Directory.GetParent(Directory.GetParent(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString()).ToString();
                     psi.Arguments = updateScript;
                     log.DebugFormat("call powershell with parameters: [ {0}]", updateScript);
                     Process powershellInstance = Process.Start(psi);
-                    Application.Current.Shutdown();
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        Application.Current.Shutdown();
+                    }));
                 }
             }
             else if(Update.IsError)
@@ -134,6 +144,22 @@ namespace AsfStartUp.ViewModel
             }
             return structs;
         }
+        private void LoadSelectedInfo(string envFilePath)
+        {
+            log.InfoFormat("start to load the selected envFile: {0}", envFilePath);
+            if (File.Exists(envFilePath))
+            {
+                log.InfoFormat("save the envFilePath {0} into history txt", envFilePath);
+                System.IO.File.WriteAllText(@"c:\programdata\ASFStartUp\history.txt", envFilePath);
+                CurrentData = _mainViewData;
+                string seqEnvName = envFilePath.Split('\\').Last();
+                LoadTreeNodeInfo(envFilePath.Remove(envFilePath.IndexOf("\\" + seqEnvName)));
+            }
+            else
+            {
+                log.InfoFormat("the selected envFile is not existed {0}", envFilePath);
+            }
+        }
 
         private void OpenASequence()
         {
@@ -145,9 +171,10 @@ namespace AsfStartUp.ViewModel
             Nullable<bool> result =  ofd.ShowDialog();
             if(result==true)
             {
-                CurrentData = _mainViewData;
-                string seqEnvName = ofd.FileName.Split('\\').Last();
-                LoadTreeNodeInfo(ofd.FileName.Remove(ofd.FileName.IndexOf("\\" + seqEnvName)));
+                LoadSelectedInfo(ofd.FileName);
+                //CurrentData = _mainViewData;
+                //string seqEnvName = ofd.FileName.Split('\\').Last();
+                //LoadTreeNodeInfo(ofd.FileName.Remove(ofd.FileName.IndexOf("\\" + seqEnvName)));
             }
        //     System.Windows.Forms.DialogResult dr =  fbd.ShowDialog();
         }

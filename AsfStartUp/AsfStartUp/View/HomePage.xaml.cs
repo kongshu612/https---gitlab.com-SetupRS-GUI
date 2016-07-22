@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using AsfStartUp.ViewModel;
 using System.Threading;
+using System.IO;
+using System.Diagnostics;
 
 namespace AsfStartUp.View
 {
@@ -21,6 +23,9 @@ namespace AsfStartUp.View
     /// </summary>
     public partial class HomePage : Window
     {
+
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public HomePage()
         {
             InitializeComponent();
@@ -30,6 +35,22 @@ namespace AsfStartUp.View
             HomePageViewModel hpvm = this.DataContext as HomePageViewModel;
             Thread t = new Thread(()=>hpvm.InstallUpdate());
             t.Start();
+        }
+
+        private void win_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            
+            string localTmpFolder = System.IO.Path.Combine(Directory.GetParent(Directory.GetParent(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString()).ToString(), "ASFStartUpNew");
+            if (Directory.Exists(localTmpFolder))
+            {
+                string updateScript = System.IO.Path.Combine(localTmpFolder, "update.ps1");
+                ProcessStartInfo psi = new ProcessStartInfo("powershell.exe");
+                psi.WindowStyle = ProcessWindowStyle.Hidden;
+                psi.WorkingDirectory = Directory.GetParent(Directory.GetParent(System.Reflection.Assembly.GetExecutingAssembly().Location).ToString()).ToString();
+                psi.Arguments = updateScript + "-restart $false";
+                log.DebugFormat("call powershell with parameters: [ {0}]", updateScript);
+                Process powershellInstance = Process.Start(psi);
+            }
         }
     }
 }
