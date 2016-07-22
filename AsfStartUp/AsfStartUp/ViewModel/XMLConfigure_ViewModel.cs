@@ -596,7 +596,7 @@ namespace AsfStartUp.ViewModel
             _RoleName = roleName;
             _OSList = osList;
             _buildsList = builds;
-            _SelectedOS = _OSList.FirstOrDefault();
+            _SelectedOS = _OSList.Where(e=> { return e.DisplayName.IndexOf("16") == -1; }).FirstOrDefault();
             SelectedBuild = BuildsList==null? null :BuildsList.FirstOrDefault();
         }
         #endregion
