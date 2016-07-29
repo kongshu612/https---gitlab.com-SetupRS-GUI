@@ -337,9 +337,43 @@ namespace AsfStartUp.Auxiliary
             Dictionary<string, ObservableCollection<string>> BuildSchemaList = new Dictionary<string, ObservableCollection<string>>();
             string EnvNumber;
             string SchemaFolderPath;
+            // a bug here. Appdisk support multi seq env xml
             if (root.Element("TestConfig").Element("Name")!=null)
             {
-                EnvNumber = root.Element("TestConfig").Element("Name").Value.ToString().Remove(0,3);
+                string EnvTypeName = root.Element("TestConfig").Element("Name").Value.ToString();
+                if(EnvTypeName.Length>5)
+                {
+                    string tmpTestsPath = FilePath.Remove(FilePath.IndexOf(@"\Regression"));
+                    string setupConfigureFile = tmpTestsPath + @"\environments\Setup\SetupRS\SetupRS.Config.xml";
+                    if(!File.Exists(setupConfigureFile))
+                    {
+                        log.DebugFormat("the setupConfigureFile not found under: {0}", setupConfigureFile);
+                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+                            MessageBox.Show("Do not find File:" + setupConfigureFile + "Try to get latest build & this app. Try again", "Error", MessageBoxButton.OK);
+                            
+                        }));
+                        return null;
+                    }
+                    log.DebugFormat("parse the setuprs.config.xml file at {0}", setupConfigureFile);
+                    XElement configureRoot = XElement.Load(setupConfigureFile);
+                    XElement targetEnv = configureRoot.Element("envmapping").Elements("env").Where(e => e.Element("name").Value.ToString() == EnvTypeName).FirstOrDefault();
+                    if(targetEnv ==null)
+                    {
+                        log.DebugFormat("the envname in the envfile is neither name nor number");
+                        Application.Current.Dispatcher.Invoke(new Action(() =>
+                        {
+                            MessageBox.Show("this sequence is not supported by Env0 or you need to get the latest build", "Error", MessageBoxButton.OK);
+                           
+                        }));
+                        return null;
+                    }
+                    EnvNumber = targetEnv.Element("mapping").Value.ToString().Remove(0, 3);
+                }
+                else
+                {
+                    EnvNumber = EnvTypeName.Remove(0, 3);
+                }
                 log.DebugFormat("load env0 type info from env xml, env0 type: {0}", EnvNumber);
             }
             else
@@ -363,7 +397,12 @@ namespace AsfStartUp.Auxiliary
                         return t;
                     }).ToArray();
                     BuildSchemaList.Add(roleName, products);
-                    log.DebugFormat("Load build info done. Add Key {0}, supported Build: {1}", roleName, products.ToString());
+                    log.DebugFormat("Load build info done. Add Key {0}, supported builds are: ", roleName);
+                    var tmpBuildLog = products.Select(p =>
+                    {
+                        log.Debug(p);
+                        return p;
+                    }).ToArray();
                     return e;
                 }).ToArray();
             }
@@ -381,28 +420,96 @@ namespace AsfStartUp.Auxiliary
             var tmp1 = root.Descendants("Hosts").Elements("Host").Select(e =>
             {
                 string role = e.Elements("Role").FirstOrDefault().Value.ToString();
+                AsfRoleInfo existingRole = RolesInfo.Where(t => t.RoleName.IndexOf(role,StringComparison.CurrentCultureIgnoreCase) ==0).FirstOrDefault();
                 if (e.Elements("UnsupportedOS").FirstOrDefault() != null)
                 {
                     ObservableCollection<string> templateBlackList = new ObservableCollection<string>(e.Element("UnsupportedOS").Value.ToString().Split(','));
                     string ProductVersion = e.Elements("ProductVersion").FirstOrDefault() == null ? "" : e.Elements("ProductVersion").FirstOrDefault().Value.ToString();
                     ObservableCollection<string> supportedBuild = SelectTargetBuild(role, BuildSchemaList);
-                    log.DebugFormat("Create a new Role, name: {0}, os blacklist: {1}, build Product: {2}, supported Build {3}", role, templateBlackList.ToString(), ProductVersion, supportedBuild == null ? string.Empty : supportedBuild.ToString());
-                    RolesInfo.Add(new AsfRoleInfo(role, templateBlackList, ProductVersion, supportedBuild));                    
+                    log.InfoFormat("the role name is {0}", role);
+                    log.Info("the os blacklist is ");
+                    if (templateBlackList != null)
+                    {
+                        var tmpBlackList = templateBlackList.Select(t =>
+                        {
+                            log.Info(t);
+                            return t;
+                        }).ToArray();
+                    }
+                    log.Info("the supported builds list is");
+                    if (supportedBuild != null)
+                    {
+                        var tmpSupportedBuilds = supportedBuild.Select(b =>
+                        {
+                            log.Info(b);
+                            return b;
+                        }).ToArray();
+                    }
+                     if (existingRole != null)
+                    {
+                        log.InfoFormat("using the existing Role: {0}", role);
+                        existingRole.TemplateBlackList = templateBlackList;
+                        existingRole.ProductVersion = ProductVersion;
+                        existingRole.SupportedBuildCollection = supportedBuild;
+                    }
+                    else {
+                        log.InfoFormat("creating a new role: {0}", role);
+                        RolesInfo.Add(new AsfRoleInfo(role, templateBlackList, ProductVersion, supportedBuild));
+                    }                   
                 }
                 else if (e.Elements("TemplateName").FirstOrDefault() != null)
                 {
                     string templateName = e.Element("TemplateName").Value.ToString();
                     string ProductVersion = e.Elements("ProductVersion").FirstOrDefault() == null ? "" : e.Elements("ProductVersion").FirstOrDefault().Value.ToString();
                     ObservableCollection<string> supportedBuild = SelectTargetBuild(role, BuildSchemaList);
-                    log.DebugFormat("Create a new Role, name: {0}, os template: {1}, build Product: {2}, supported Build {3}", role, templateName, ProductVersion, supportedBuild == null ? string.Empty : supportedBuild.ToString());
-                    RolesInfo.Add(new AsfRoleInfo(role, templateName, ProductVersion, supportedBuild));
+                    log.InfoFormat("the role name is {0}, os template is {1}", role, templateName);
+                    log.Info("the supported builds list is");
+                    if (supportedBuild != null)
+                    {
+                        var tmpSupportedBuilds = supportedBuild.Select(b =>
+                        {
+                            log.Info(b);
+                            return b;
+                        }).ToArray();
+                    }
+                    if(existingRole!=null)
+                    {
+                        log.InfoFormat("using the existing Role: {0}", role);
+                        existingRole.TemplateName = templateName;
+                        existingRole.ProductVersion = ProductVersion;
+                        existingRole.SupportedBuildCollection = supportedBuild;
+                    }
+                    else
+                    {
+                        log.InfoFormat("creating a new role: {0}", role);
+                        RolesInfo.Add(new AsfRoleInfo(role, templateName, ProductVersion, supportedBuild));
+                    }
                 }
                 else
                 {
                     string ProductVersion = e.Elements("ProductVersion").FirstOrDefault() == null ? "" : e.Elements("ProductVersion").FirstOrDefault().Value.ToString();
                     ObservableCollection<string> supportedBuild = SelectTargetBuild(role, BuildSchemaList);
-                    log.DebugFormat("Create a new Role, name: {0}, build Product: {1}, supported Build {2}", role,  ProductVersion, supportedBuild==null?string.Empty:supportedBuild.ToString());
-                    RolesInfo.Add(new AsfRoleInfo(role, ProductVersion,supportedBuild));
+                    log.InfoFormat("the role name is {0}", role);                    
+                    log.Info("the supported builds list is");
+                    if (supportedBuild != null)
+                    {
+                        var tmpSupportedBuilds = supportedBuild.Select(b =>
+                        {
+                            log.Info(b);
+                            return b;
+                        }).ToArray();
+                    }
+                    if(existingRole!=null)
+                    {
+                        log.InfoFormat("using the existing Role: {0}", role);
+                        existingRole.ProductVersion = ProductVersion;
+                        existingRole.SupportedBuildCollection = supportedBuild;
+                    }
+                    else
+                    {
+                        log.DebugFormat("creating a new role: {0}", role);
+                        RolesInfo.Add(new AsfRoleInfo(role, ProductVersion, supportedBuild));
+                    }
                 }
                 return e;
             }

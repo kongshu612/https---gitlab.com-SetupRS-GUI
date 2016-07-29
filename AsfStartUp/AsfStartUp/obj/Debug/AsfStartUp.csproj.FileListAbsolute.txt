@@ -54,3 +54,4 @@ C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\AsfStartUp.csproj.GenerateResour
 C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\AsfStartUp.exe
 C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\AsfStartUp.pdb
 C:\DevelopSpace\AsfStartUp\AsfStartUp\bin\Debug\update.ps1
+C:\DevelopSpace\AsfStartUp\AsfStartUp\obj\Debug\AsfStartUp.csprojResolveAssemblyReference.cache

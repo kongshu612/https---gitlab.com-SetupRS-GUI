@@ -60,6 +60,18 @@ namespace AsfStartUp.Auxiliary
                 return e;
             }).ToArray();
         }
+        private static void UpdatejsonPath(string jsonPath,string key,string value)
+        {
+            root.SelectToken(jsonPath)[key] = value;
+        }
+        private static string GetLACIPath(List<BuildConfigure_ViewModel> _selectedBuilds)
+        {
+            //here we just get the first build which contains the LACI
+            var tar = _selectedBuilds.Where(e =>
+            { return e.Subdirectories.Where(t => t.IndexOf("LACI", StringComparison.CurrentCultureIgnoreCase) != -1).FirstOrDefault() != null; }
+            ).FirstOrDefault();
+            return tar==null?"": tar.BuildName + @"\" + tar.Subdirectories.Where(t => t.IndexOf("LACI", StringComparison.CurrentCultureIgnoreCase) != -1).First().ToString();
+        }
         public static bool UpdateJsonTemplate(string _jsonFilePath, ObservableCollection<GeneralDisplayData> _roleOSBuild)
         {
             filePath = _jsonFilePath;
@@ -89,6 +101,18 @@ namespace AsfStartUp.Auxiliary
                 return r;
             }).ToArray();
             UpdateBuilds(_buildsList);
+            string laciPath = GetLACIPath(_buildsList);
+            log.InfoFormat("the laci install path is {0}", laciPath);
+            // a bug here. if user do not specify the laci path and we need this packet, it will failed
+            // when we invoke our sequence. Currently, we don't notify user. maybe later will show it up.
+            if(string.IsNullOrEmpty(laciPath))
+            {
+                log.ErrorFormat("we cannot get the laciPath from selected builds");                
+            }
+            else
+            {
+                UpdatejsonPath("$.Environment.Workflow.Sequences[2].Data", "LACIINSTALLPATH", laciPath);
+            }
             File.WriteAllText(filePath, root.ToString());
             return true;
         }

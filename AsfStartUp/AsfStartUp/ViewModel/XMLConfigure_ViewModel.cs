@@ -401,6 +401,8 @@ namespace AsfStartUp.ViewModel
     {
         #region private members
         private ObservableCollection<OSInfo> _OSList;
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         #endregion
 
         #region public Properties
@@ -412,6 +414,10 @@ namespace AsfStartUp.ViewModel
             GeneralData = new ObservableCollection<GeneralDisplayData>();
             _OSList = AsfStartUp.Auxiliary.OSAccess.LoadOsInfo(templateFile);
             ObservableCollection<AsfRoleInfo> tmp = AsfStartUp.Auxiliary.EnvAccess.LoadRoleInfo(envFile);
+            if(tmp==null)
+            {
+                return;
+            }
             LoadRoleOSBuildInfo(tmp);
             var tmp1 = GeneralData;
             GeneralData = new ObservableCollection<GeneralDisplayData>(tmp1.OrderBy(e => e.CType).ToArray());
@@ -419,17 +425,7 @@ namespace AsfStartUp.ViewModel
             // low performance. we need to increase the performance. use reference count
             ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>().UpdateBuildSet();
         }
-        //private Role_OSBuild_ViewModel ConsturctRoleOSBuild(string roleName)
-        //{
-        //    ObservableCollection<OSInfo> osList = new ObservableCollection<OSInfo>();
-        //    if (roleName.Contains("TSVDA") || roleName.Contains("DC") || roleName.Contains("SF"))
-        //        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_server).ToList());
-        //    else if (roleName.Contains("VDA"))
-        //        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType == OSInfo.OperatingSystemType.win_desktop).ToList());
-        //    else
-        //        osList = new ObservableCollection<OSInfo>(_OSList.Where(o => o.OSType != OSInfo.OperatingSystemType.linux).ToList());
-        //    return new Role_OSBuild_ViewModel(roleName, osList);
-        //}
+        
         private ObservableCollection<OSInfo> LoadOSSet(AsfRoleInfo e)
         {
             ObservableCollection<OSInfo> osList = new ObservableCollection<OSInfo>();
@@ -482,6 +478,15 @@ namespace AsfStartUp.ViewModel
                 else
                 {
                     validateBuildSet = e.SupportedBuildCollection;
+                    log.DebugFormat("the validate build set of {0} is: ", e.RoleName);
+                    if (validateBuildSet != null)
+                    {
+                        var tmpvb = validateBuildSet.Select(v =>
+                        {
+                            log.Debug(v);
+                            return v;
+                        }).ToArray();
+                    }
                 }
                 GeneralData.Add(new GeneralDisplayData(e.RoleName,new Role_OSBuild_ViewModel(e.RoleName,osList,validateBuildSet),CustomerType.Combo));              
                 return e;
@@ -518,6 +523,7 @@ namespace AsfStartUp.ViewModel
         #endregion
 
         #region private members
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private string _RoleName;
         private ObservableCollection<OSInfo> _OSList;
         private ObservableCollection<string> _buildsList;
@@ -574,7 +580,14 @@ namespace AsfStartUp.ViewModel
                 if (!string.IsNullOrEmpty(value))
                 {
                     string SBName = value;
-                    GeneralCommon_ViewModel gcvm = ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>().Builds.Where(p => { return ((BuildConfigure_ViewModel)p).BuildName == SBName; }).FirstOrDefault();
+                    GeneralCommon_ViewModel gcvm = ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>()
+                        .Builds
+                        .Where(p => 
+                        {
+                            string _bn = ((BuildConfigure_ViewModel)p).BuildName;
+                            log.Debug(_bn +" : " + SBName);
+                            return _bn.IndexOf(SBName,StringComparison.CurrentCultureIgnoreCase)==0;
+                        }).FirstOrDefault();
                     _SelectedBuild = gcvm == null ? null : gcvm as BuildConfigure_ViewModel;
                     // low performance. we need to increase the performance. use reference count
                     ServiceLocator.Current.GetInstance<BuildsConfigure_ViewModel>().UpdateBuildSet();

@@ -81,10 +81,7 @@ namespace AsfStartUp.ViewModel
             ).ToArray();
             SelectedBuild = Builds.FirstOrDefault();
         }
-        //private void UpdateBuildData(Hashtable ht)
-        //{
-        //   // BuildsAccess.UpdateBuild(ht,BuildFilePath);
-        //}
+       
         #endregion
 
         #region public Commands
