@@ -344,31 +344,51 @@ namespace AsfStartUp.Auxiliary
                 if(EnvTypeName.Length>5)
                 {
                     string tmpTestsPath = FilePath.Remove(FilePath.IndexOf(@"\Regression"));
-                    string setupConfigureFile = tmpTestsPath + @"\environments\Setup\SetupRS\SetupRS.Config.xml";
-                    if(!File.Exists(setupConfigureFile))
+                    string EnvTemplateJsonFile = tmpTestsPath + @"\environments\BasicEnvs\" + EnvTypeName + @"\EnvTemplate.json";
+                    //we fix the env naming rule bug here. As we do not support mapping between envNumber and envName from Env4.
+                    // For fix the bug with the latest code modification. we jsut take this way.
+                    if(!File.Exists(EnvTemplateJsonFile))
                     {
-                        log.DebugFormat("the setupConfigureFile not found under: {0}", setupConfigureFile);
+                        log.DebugFormat("the setupConfigureFile not found under: {0}", EnvTemplateJsonFile);
                         Application.Current.Dispatcher.Invoke(new Action(() =>
                         {
-                            MessageBox.Show("Do not find File:" + setupConfigureFile + "Try to get latest build & this app. Try again", "Error", MessageBoxButton.OK);
-                            
+                            MessageBox.Show("Do not find File:" + EnvTemplateJsonFile + "Try to get latest build & this app. Try again", "Error", MessageBoxButton.OK);
+
                         }));
                         return null;
                     }
-                    log.DebugFormat("parse the setuprs.config.xml file at {0}", setupConfigureFile);
-                    XElement configureRoot = XElement.Load(setupConfigureFile);
-                    XElement targetEnv = configureRoot.Element("envmapping").Elements("env").Where(e => e.Element("name").Value.ToString() == EnvTypeName).FirstOrDefault();
-                    if(targetEnv ==null)
-                    {
-                        log.DebugFormat("the envname in the envfile is neither name nor number");
-                        Application.Current.Dispatcher.Invoke(new Action(() =>
-                        {
-                            MessageBox.Show("this sequence is not supported by Env0 or you need to get the latest build", "Error", MessageBoxButton.OK);
-                           
-                        }));
-                        return null;
-                    }
-                    EnvNumber = targetEnv.Element("mapping").Value.ToString().Remove(0, 3);
+                    string SchemaName = JsonAccess.GetSchemaName(EnvTemplateJsonFile);
+                    EnvNumber = SchemaName.Remove(0, 6);
+                    //string setupConfigureFile = tmpTestsPath + @"\environments\Setup\SetupRS\SetupRS.Config.xml";
+                    //if(!File.Exists(setupConfigureFile))
+                    //{
+                    //    log.DebugFormat("the setupConfigureFile not found under: {0}", setupConfigureFile);
+                    //    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    //    {
+                    //        MessageBox.Show("Do not find File:" + setupConfigureFile + "Try to get latest build & this app. Try again", "Error", MessageBoxButton.OK);
+
+                    //    }));
+                    //    return null;
+                    //}
+                    //log.DebugFormat("parse the setuprs.config.xml file at {0}", setupConfigureFile);
+                    //XElement configureRoot = XElement.Load(setupConfigureFile);
+                    //XElement targetEnv = configureRoot.Element("envmapping").Elements("env")
+                    //    .Where(e => e.Element("name").Value.ToString() == EnvTypeName)
+                    //    .FirstOrDefault();
+                    //if(targetEnv ==null)
+                    //{
+                    //    //As from Env4, we do not support EnvNumber mapping to EnvName. Fix bugs here.
+                    //    log.DebugFormat("the envname in the envfile is neither name nor number");
+                    //    log.DebugFormat("we take the schema name from EnvTemplate.json directly ");
+                    //    if (File.Exists())
+                    //    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    //    {
+                    //        MessageBox.Show("this sequence is not supported by Env0 or you need to get the latest build", "Error", MessageBoxButton.OK);
+
+                    //    }));
+                    //    return null;
+                    //}
+                    //EnvNumber = targetEnv.Element("mapping").Value.ToString().Remove(0, 3);
                 }
                 else
                 {

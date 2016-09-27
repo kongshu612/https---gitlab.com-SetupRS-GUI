@@ -236,13 +236,13 @@ namespace AsfStartUp.ViewModel
             if(Directory.Exists(_testsFolderPath+@"\Regression"))
             {
                 TreeNode _parent = null ;
-                var tmp = Directory.EnumerateDirectories(_testsFolderPath + @"\Regression").Where(e => !e.ToLower().Contains("common")).Select(e =>
+                var tmp = Directory.EnumerateDirectories(_testsFolderPath + @"\Regression").Where(e => !e.ToLower().Equals("common")).Select(e =>
                     {
                         if (Directory.EnumerateDirectories(e, "Seq*").Count() > 0 && Directory.EnumerateDirectories(e, "Common").Count() == 1)
                         {
                             _parent = _parent ?? new TreeNode(_testsFolderPath + @"\Regression");
                             TreeNode tn = new TreeNode(e,_parent);
-                            var t = Directory.EnumerateDirectories(e).Where(c => !c.ToLower().Contains("common")).Select(c =>
+                            var t = Directory.EnumerateDirectories(e).Where(c => !c.ToLower().Equals("common")).Select(c =>
                               {
                                   tn.ChildNodes.Add(new TreeNode(c,tn,true));
                                   return c;
@@ -256,13 +256,13 @@ namespace AsfStartUp.ViewModel
             if (Directory.Exists(_testsFolderPath + @"\componentbvts"))
             {
                 TreeNode _parent = null;
-                var tmp = Directory.EnumerateDirectories(_testsFolderPath + @"\componentbvts").Where(e => !e.ToLower().Contains("common")).Select(e =>
+                var tmp = Directory.EnumerateDirectories(_testsFolderPath + @"\componentbvts").Where(e => !e.ToLower().Equals("common")).Select(e =>
                 {
                     if (Directory.EnumerateDirectories(e,"Seq*").Count() >0 && Directory.EnumerateDirectories(e,"Common").Count()==1)
                     {
                         _parent = _parent ?? new TreeNode(_testsFolderPath + @"\componentbvts");
                         TreeNode tn = new TreeNode(e,_parent);
-                        var t = Directory.EnumerateDirectories(e).Where(c => !c.ToLower().Contains("common")).Select(c =>
+                        var t = Directory.EnumerateDirectories(e).Where(c => !c.ToLower().Equals("common")).Select(c =>
                         {
                             if(Directory.EnumerateFiles(c,"Sequence*_seq.xml").Count()==1)
                                 tn.ChildNodes.Add(new TreeNode(c,tn,true));

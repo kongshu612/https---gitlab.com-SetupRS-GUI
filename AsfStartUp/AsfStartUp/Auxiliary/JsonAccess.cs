@@ -26,15 +26,21 @@ namespace AsfStartUp.Auxiliary
                 e["Settings"]["TemplateName"] = rovm._SelectedOS.TemplateName;
                 return e;
             }).ToArray();
+            JToken targetObj = root["Environment"]["Workflow"]["Sequences"].Where(t => t["Data"] != null).FirstOrDefault();
             if (rovm.RoleName != "DC-1")
-                root["Environment"]["Workflow"]["Sequences"][2]["Data"]["PRODUCT_VERSION_" + rovm.RoleName.Remove(rovm.RoleName.IndexOf('-'), 1)] = rovm.SelectedBuild;
+                targetObj["Data"]["PRODUCT_VERSION_" + rovm.RoleName.Remove(rovm.RoleName.IndexOf('-'), 1)] = rovm.SelectedBuild;
             else
-                root["Environment"]["Workflow"]["Sequences"][2]["Data"]["PRODUCT_VERSION_DOMAINCONTROLLER"] = rovm.SelectedBuild;
+                targetObj["Data"]["PRODUCT_VERSION_DOMAINCONTROLLER"] = rovm.SelectedBuild;
         }
         private static void UpdateBuilds(List<BuildConfigure_ViewModel> _selectedBuilds)
         {
             JArray Builds = root["Environment"]["Builds"] as JArray;
-            JObject WorkflowData = root["Environment"]["Workflow"]["Sequences"][2]["Data"] as JObject;
+            //Remove hard code here
+            //JObject WorkflowData = root["Environment"]["Workflow"]["Sequences"][2]["Data"] as JObject;
+            JObject WorkflowDataParent = root["Environment"]["Workflow"]["Sequences"]
+                                .Where(t => t["Data"] != null)
+                                .FirstOrDefault() as JObject;
+            JObject WorkflowData = WorkflowDataParent["Data"] as JObject;
             Builds.Clear();
             var tmp = _selectedBuilds.Select(e =>
             {
@@ -68,9 +74,15 @@ namespace AsfStartUp.Auxiliary
         {
             //here we just get the first build which contains the LACI
             var tar = _selectedBuilds.Where(e =>
-            { return e.Subdirectories.Where(t => t.IndexOf("LACI", StringComparison.CurrentCultureIgnoreCase) != -1).FirstOrDefault() != null; }
+            { return e.Subdirectories
+                .Where(t => t.IndexOf("LACI", StringComparison.CurrentCultureIgnoreCase) != -1)
+                .FirstOrDefault() != null;
+            }
             ).FirstOrDefault();
-            return tar==null?"": tar.BuildName + @"\" + tar.Subdirectories.Where(t => t.IndexOf("LACI", StringComparison.CurrentCultureIgnoreCase) != -1).First().ToString();
+            return tar==null?"": tar.BuildName + @"\" + tar.Subdirectories
+                                                    .Where(t => t.IndexOf("LACI", StringComparison.CurrentCultureIgnoreCase) != -1)
+                                                    .First()
+                                                    .ToString();
         }
         public static bool UpdateJsonTemplate(string _jsonFilePath, ObservableCollection<GeneralDisplayData> _roleOSBuild)
         {
@@ -111,11 +123,20 @@ namespace AsfStartUp.Auxiliary
             }
             else
             {
-                UpdatejsonPath("$.Environment.Workflow.Sequences[2].Data", "LACIINSTALLPATH", laciPath);
+                var laciJson = root["Environment"]["Workflow"]["Sequences"]
+                                .Where(t => t["Data"] != null)
+                                .FirstOrDefault() as JObject;
+                laciJson["Data"]["LACIINSTALLPATH"] = laciPath;
+                //UpdatejsonPath("$.Environment.Workflow.Sequences[2].Data", "LACIINSTALLPATH", laciPath);
             }
             File.WriteAllText(filePath, root.ToString());
             return true;
         }
 
+        public static string GetSchemaName(string jsonPath)
+        {
+            JObject tmp = JObject.Parse(File.ReadAllText(jsonPath));
+            return tmp["Environment"]["SchemaName"].ToString();
+        }
     }
 }
